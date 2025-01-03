@@ -16,37 +16,18 @@ import com.Payvang.Login.Util.ErrorType;
 @RestController
 public class AccountsController {
 
-	     @Autowired
-	    private UserService userService;
-	     
-	     @Autowired
-	     private UserRepository userrepository;
-	
-	@GetMapping("/amit")
-	public String message() {
-		System.out.println("Profile accessed");
-		return "profile accessed";
+	@Autowired
+	private UserService userService;
+
+	@PostMapping("/merchant")
+	public ResponseEntity<ResponseObject> createNewUser(@RequestBody SignupAction userbody) {
+
+		ResponseObject responseObject = userService.createNewUser(userbody);
+
+		if (!ErrorType.SUCCESS.getResponseCode().equals(responseObject.getResponseCode())) {
+			return ResponseEntity.badRequest().body(responseObject);
+		}
+		return ResponseEntity.ok(responseObject);
 	}
-	
-	
-	 @PostMapping("/signup") 
-	    public ResponseEntity<ResponseObject> createNewUser(@RequestBody SignupAction userbody) {
-	    	
-	        ResponseObject responseObject = userService.createNewUser(userbody);
-	        
-	        if (!ErrorType.SUCCESS.getResponseCode().equals(responseObject.getResponseCode())) {
-	            return ResponseEntity.badRequest().body(responseObject);
-	        }      
-	        return ResponseEntity.ok(responseObject);
-	    }
-	 
-	 @PostMapping("/register") 
-	    public ResponseEntity<String> createNewUser(@RequestBody User user) {
-	    	
-	     //   ResponseObject responseObject = userService.createNewUser(userbody);
-		 
-		 User users = userrepository.save(user);
-	            
-	        return ResponseEntity.ok("USer created Successfully");
-	    }
+
 }
