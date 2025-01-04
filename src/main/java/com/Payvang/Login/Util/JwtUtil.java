@@ -46,7 +46,7 @@ public class JwtUtil {
 
 	private String createToken(Map<String, Object> claims, String subject) {
 		return Jwts.builder().claims(claims).subject(subject).issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + 1000 * 5)) // 5 minute token expiry
+				.expiration(new Date(System.currentTimeMillis() + 1000 * 5*60)) // 5 minute token expiry
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 

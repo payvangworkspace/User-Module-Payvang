@@ -1,6 +1,5 @@
 package com.Payvang.Login.Services;
 
-
 import java.util.Date;
 import java.util.Optional;
 
@@ -33,18 +32,16 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userrepository;
-	
+
 	@Autowired
 	JwtUtil jwtutil;
-
-	
 
 	public ResponseObject createNewUser(SignupAction userbody) {
 		ResponseObject responseObject = null;
 		try {
-                        
+
 			if (userbody.getUserRoleType().equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
-                         
+
 				responseObject = createUser(getUserInstance(userbody), UserType.RESELLER, "");
 			} else {
 
@@ -57,7 +54,7 @@ public class UserService {
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			
+
 			responseObject = new ResponseObject();
 			responseObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
 			responseObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
@@ -87,14 +84,14 @@ public class UserService {
 
 		ResponseObject responseObject = new ResponseObject();
 		ResponseObject responseActionObject = new ResponseObject();
-		
+
 		Date date = new Date();
 		String salt = SaltFactory.generateRandomSalt();
 
 		responseObject = checkuser(user.getEmailId());
 
 		if (ErrorType.USER_AVAILABLE.getResponseCode().equals(responseObject.getResponseCode())) {
-             
+
 			if (userType.equals(UserType.RESELLER)) {
 				user.setResellerId(TransactionManager.getNewTransactionId());
 			}
@@ -106,18 +103,17 @@ public class UserService {
 			user.setEmailValidationFlag(false);
 			user.setExpressPayFlag(false);
 			user.setRegistrationDate(date);
-			
+
 			if (null != user.getPassword()) {
 				user.setPassword(Hasher.getHash(user.getPassword().concat(salt)));
 			}
 			user.setParentappId(parentappId);
-			
 
 			userrepository.save(user);
-			
+
 			boolean isSaltInserted = saltFileManager.insertSalt(user.getAppId(), salt);
 
-			if (!isSaltInserted) {				
+			if (!isSaltInserted) {
 				userrepository.delete(user);
 				throw new SystemException(ErrorType.INTERNAL_SYSTEM_ERROR,
 						ErrorType.INTERNAL_SYSTEM_ERROR.getResponseMessage());
@@ -137,8 +133,8 @@ public class UserService {
 	}
 
 	public ResponseObject checkuser(String emailId) {
-	
-         ResponseObject responseObject = new ResponseObject();
+
+		ResponseObject responseObject = new ResponseObject();
 		Optional<User> checkedUser = userrepository.findByEmailId(emailId);
 		checkedUser.ifPresentOrElse(user -> {
 			// If the user is found
@@ -153,72 +149,59 @@ public class UserService {
 	}
 
 	public ResponseObject loginUser(LoginRequest loginRequest) {
-       
-		
-	            ResponseObject responseObject = new ResponseObject();
-	     try {
-	    		if(loginRequest.getEmailId() == null || loginRequest.getPassword() == null)
-	        	{
-	        		throw new InvalidRequestException(ErrorConstants.usernamePasswordNotFound);
-	        	}
-	        	
-	        	String username = loginRequest.getEmailId();
-	        	String password = loginRequest.getPassword();
-	        	
-	        	Optional<User> user = userrepository.findByEmailId(username);
-	        	if (user.isEmpty())
-	        	{
-	        		throw new UnauthorizedException(ErrorConstants.usernameInvalid);
-	        	}
 
-                       User users = user.get();
-	        	String userStatus = users.getUserStatus().getStatus();
-	        	String activeStatus = UserStatusType.ACTIVE.getStatus();
-	        	
-	    		if (!userStatus.equals(activeStatus))
-	    		{
-	    			throw new UnauthorizedException(ErrorConstants.userInactive);
-	    		}
-	    		
-	        	
-	        	   var userDBPassword = users.getPassword();
-	        	  
-  	        	password = PasswordHasher.hashPassword(password,users.getAppId());
-	            if (password.equals(userDBPassword)) {	            	
-	            	 String accessToken = jwtutil.generateToken(users.getEmailId());
-	            	 responseObject.setResponseMessage(accessToken);
-	            }
-	            
-        return responseObject;
-    }catch(Exception ex) {
-    	ex.printStackTrace();
-    }
+		ResponseObject responseObject = new ResponseObject();
+		try {
+			if (loginRequest.getEmailId() == null || loginRequest.getPassword() == null) {
+				throw new InvalidRequestException(ErrorConstants.usernamePasswordNotFound);
+			}
+
+			String username = loginRequest.getEmailId();
+			String password = loginRequest.getPassword();
+
+			Optional<User> user = userrepository.findByEmailId(username);
+			if (user.isEmpty()) {
+				throw new UnauthorizedException(ErrorConstants.usernameInvalid);
+			}
+
+			User users = user.get();
+			String userStatus = users.getUserStatus().getStatus();
+			String activeStatus = UserStatusType.ACTIVE.getStatus();
+
+			if (!userStatus.equals(activeStatus)) {
+				throw new UnauthorizedException(ErrorConstants.userInactive);
+			}
+
+			var userDBPassword = users.getPassword();
+
+			password = PasswordHasher.hashPassword(password, users.getAppId());
+			if (password.equals(userDBPassword)) {
+				String accessToken = jwtutil.generateToken(users.getEmailId());
+				responseObject.setResponseMessage(accessToken);
+			}
+
+			return responseObject;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		return responseObject;
 	}
-	
+
+	public User findUserProfile(String emailid) {
+		Optional<User> user = userrepository.findByEmailId(emailid);
+		if (user.isPresent()) {
+			User userdata = user.get();
+			System.out.println("here is user data "+ userdata);
+			return userdata;
+		} else {
+			throw new InvalidRequestException(ErrorConstants.usernamePasswordNotFound);
+		}
+
+	}
+
 }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-    
-    // Generate OTP    FOR MultiAuthentication System.
+
+// Generate OTP FOR MultiAuthentication System.
 //String otp = OtpService.generateOTP();
 //// Check if login detail already exists
 //LoginDetails loginDetail = loginDetailRepository.findByUsername(username);
@@ -251,4 +234,3 @@ public class UserService {
 //else {
 //throw new UnauthorizedException(ErrorConstants.incorrectPassword);
 //}
-
