@@ -48,6 +48,14 @@ public class User implements Serializable {
 	private String contactPerson;
 
 	private String merchantType;
+	public Set<Roles> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Roles> roles) {
+		this.roles = roles;
+	}
+
 	private String resellerId;
 	private String productDetail;
 	private Date registrationDate;

@@ -1,33 +1,43 @@
 package com.Payvang.Login.Services;
 
+
 import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.Payvang.Login.Constants.CrmFieldConstants;
+import com.Payvang.Login.Constants.ErrorConstants;
 import com.Payvang.Login.Constants.UserType;
+import com.Payvang.Login.CustomExceptions.InvalidRequestException;
 import com.Payvang.Login.CustomExceptions.SystemException;
+import com.Payvang.Login.CustomExceptions.UnauthorizedException;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
 import com.Payvang.Login.DataAccess.Models.User;
+
+import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Repositories.UserRepository;
 import com.Payvang.Login.Util.ErrorType;
 import com.Payvang.Login.Util.Hasher;
+import com.Payvang.Login.Util.JwtUtil;
+import com.Payvang.Login.Util.PasswordHasher;
 import com.Payvang.Login.Util.SaltFactory;
 import com.Payvang.Login.Util.SaltFileManager;
 import com.Payvang.Login.Util.TransactionManager;
 import com.Payvang.Login.Util.UserStatusType;
 
-@Component
+@Service
 public class UserService {
 
 	@Autowired
 	private UserRepository userrepository;
+	
+	@Autowired
+	JwtUtil jwtutil;
 
-	private ResponseObject responseObject = new ResponseObject();
+	
 
 	public ResponseObject createNewUser(SignupAction userbody) {
 		ResponseObject responseObject = null;
@@ -128,7 +138,7 @@ public class UserService {
 
 	public ResponseObject checkuser(String emailId) {
 	
-
+         ResponseObject responseObject = new ResponseObject();
 		Optional<User> checkedUser = userrepository.findByEmailId(emailId);
 		checkedUser.ifPresentOrElse(user -> {
 			// If the user is found
@@ -141,5 +151,104 @@ public class UserService {
 		});
 		return responseObject;
 	}
+
+	public ResponseObject loginUser(LoginRequest loginRequest) {
+       
+		
+	            ResponseObject responseObject = new ResponseObject();
+	     try {
+	    		if(loginRequest.getEmailId() == null || loginRequest.getPassword() == null)
+	        	{
+	        		throw new InvalidRequestException(ErrorConstants.usernamePasswordNotFound);
+	        	}
+	        	
+	        	String username = loginRequest.getEmailId();
+	        	String password = loginRequest.getPassword();
+	        	
+	        	Optional<User> user = userrepository.findByEmailId(username);
+	        	if (user.isEmpty())
+	        	{
+	        		throw new UnauthorizedException(ErrorConstants.usernameInvalid);
+	        	}
+
+                       User users = user.get();
+	        	String userStatus = users.getUserStatus().getStatus();
+	        	String activeStatus = UserStatusType.ACTIVE.getStatus();
+	        	
+	    		if (!userStatus.equals(activeStatus))
+	    		{
+	    			throw new UnauthorizedException(ErrorConstants.userInactive);
+	    		}
+	    		
+	        	
+	        	   var userDBPassword = users.getPassword();
+	        	  
+  	        	password = PasswordHasher.hashPassword(password,users.getAppId());
+	            if (password.equals(userDBPassword)) {	            	
+	            	 String accessToken = jwtutil.generateToken(users.getEmailId());
+	            	 responseObject.setResponseMessage(accessToken);
+	            }
+	            
+        return responseObject;
+    }catch(Exception ex) {
+    	ex.printStackTrace();
+    }
+		return responseObject;
+	}
 	
 }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    
+    // Generate OTP    FOR MultiAuthentication System.
+//String otp = OtpService.generateOTP();
+//// Check if login detail already exists
+//LoginDetails loginDetail = loginDetailRepository.findByUsername(username);
+//LocalDateTime now = LocalDateTime.now();
+//LocalDateTime expiryTime = now.plusMinutes(3); // Time set to 3 minutes
+//
+//if (loginDetail == null) {
+//// Create new login detail entry
+//loginDetail = new LoginDetails();
+//loginDetail.setUsername(username);
+//loginDetail.setOtp(otp);
+//loginDetail.setExpiryTime(expiryTime);
+//} else {
+//// Update existing login detail entry
+//loginDetail.setOtp(otp);
+//loginDetail.setExpiryTime(expiryTime);
+//}
+//
+//// Save login detail
+//loginDetailRepository.save(loginDetail);
+//
+//// send email for OTP, TODO: make template for it
+//
+//var emailMessage = this.emailMessage.loginOtpMessage();
+//emailService.sendEmail(username, emailMessage.subject, emailMessage.body + otp);
+//
+//String encryptedUsername = AESEncryptUtility.encrypt(username);
+//return new EncryptedKeyGenericResponse(encryptedUsername, SuccessMessage.otpSentToEmail);
+//}
+//else {
+//throw new UnauthorizedException(ErrorConstants.incorrectPassword);
+//}
+
