@@ -41,10 +41,8 @@ public class SecurityConfigurer {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/merchant","api/auth/login").permitAll() // Allow public access
-                .requestMatchers("/api/other").hasRole("ADMIN") // Allow only ADMIN1 to access this endpoint
-              //  .requestMatchers("/api/keys/generateAdmin2KEK").hasRole("ADMIN2")
-              //  .requestMatchers("/api/keys/**").hasRole("SUPERADMIN")
-                .anyRequest().authenticated()) // Require authentication for all other requests
+                .requestMatchers("/api/other").hasRole("ADMIN") // Allow only ADMIN1 to access this endpoint          
+                .anyRequest().authenticated()) 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(handler -> handler.authenticationEntryPoint(new AuthEntryPoint()));
 
