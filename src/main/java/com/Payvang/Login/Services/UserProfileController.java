@@ -42,8 +42,6 @@ public class UserProfileController {
 
 	@PostMapping("/profile")
 	public UserProfileResponse getUserProfile(@RequestBody LoginRequest loginRequest) {
-		System.out.println(" I am here ");
-		System.out.println("email is here " + loginRequest.getEmailId());
 		User user = userservice.findUserProfile(loginRequest.getEmailId());
 		return new UserProfileResponse(user.getFirstName(), user.getLastName(), user.getBusinessName());
 	}
