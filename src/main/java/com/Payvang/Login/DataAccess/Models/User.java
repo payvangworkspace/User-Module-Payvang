@@ -1,4 +1,5 @@
 package com.Payvang.Login.DataAccess.Models;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -7,25 +8,35 @@ import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.Payvang.Login.Constants.UserType;
 import com.Payvang.Login.Util.UserStatusType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
-
 @Table(name = "User",indexes = { @Index(name = "IDX_MYIDX1", columnList = "emailId,appId") })@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User implements Serializable {
 	private static final long serialVersionUID = 8476685067435231830L;
 
 	// Personal details
-	@Id
+//	@Id
+	
+	
+//     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//	 private Long id;
+	 @Id
 	@Column(nullable=false,unique=true)
 	private String emailId;  
 	private String password;
@@ -37,6 +48,14 @@ public class User implements Serializable {
 	private String contactPerson;
 
 	private String merchantType;
+	public Set<Roles> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Roles> roles) {
+		this.roles = roles;
+	}
+
 	private String resellerId;
 	private String productDetail;
 	private Date registrationDate;
@@ -151,6 +170,12 @@ public class User implements Serializable {
 	/*
 	 * @Enumerated(EnumType.STRING) private UserType userType;
 	 */
+	
+	@Enumerated(EnumType.STRING)
+	private UserType userType;
+	
+	@OneToMany(targetEntity=Roles.class,fetch = FetchType.EAGER,cascade = CascadeType.ALL)	
+	private Set<Roles> roles = new HashSet<Roles>();
 	
 	public User(){
 		
@@ -850,6 +875,14 @@ public class User implements Serializable {
 
 	public void setWebhookurl(String webhookurl) {
 		this.webhookurl = webhookurl;
+	}
+
+	public UserType getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
 
 	
