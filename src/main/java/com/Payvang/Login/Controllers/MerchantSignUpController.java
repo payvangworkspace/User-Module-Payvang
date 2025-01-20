@@ -22,16 +22,6 @@ public class MerchantSignUpController {
 	@Autowired
 	UserService userService;
 	
-//	@PostMapping("/merchantSignUp")
-//	public ResponseEntity<ResponseObject> createNewUser(@RequestBody MerchantSignup userbody) {
-// 
-//		ResponseObject responseObject = userService.createMerchant(userbody);
-// 
-//		if (!ErrorType.SUCCESS.getResponseCode().equals(responseObject.getResponseCode())) {
-//			return ResponseEntity.badRequest().body(responseObject);
-//		}
-//		return ResponseEntity.ok(responseObject);
-//	}
 	
 	@PostMapping("/merchantSignUp")
 	public ResponseEntity<ResponseObject> createNewUser(@RequestBody MerchantSignup userbody) {

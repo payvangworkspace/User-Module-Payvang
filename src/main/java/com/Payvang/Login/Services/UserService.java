@@ -254,8 +254,8 @@ public class UserService {
 
 				// Calling External Service to send email--Nitesh
 				EmailRequest emailRequest = EmailRequest.builder().to(userbody.getEmailId())
-						.message("Congratulation Merchant, your account has been created successfully.")
-						.subject("Congurations").build();
+						.message("Congratulation Merchant, your account has been registered successfully, Please validate your account.")
+						.subject("Congurations your account has been registered.").build();
 				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
 
 				logger.info("Email has been send successfully.");
@@ -277,36 +277,4 @@ public class UserService {
 
 }
 
-// Generate OTP FOR MultiAuthentication System.
-//String otp = OtpService.generateOTP();
-//// Check if login detail already exists
-//LoginDetails loginDetail = loginDetailRepository.findByUsername(username);
-//LocalDateTime now = LocalDateTime.now();
-//LocalDateTime expiryTime = now.plusMinutes(3); // Time set to 3 minutes
-//
-//if (loginDetail == null) {
-//// Create new login detail entry
-//loginDetail = new LoginDetails();
-//loginDetail.setUsername(username);
-//loginDetail.setOtp(otp);
-//loginDetail.setExpiryTime(expiryTime);
-//} else {
-//// Update existing login detail entry
-//loginDetail.setOtp(otp);
-//loginDetail.setExpiryTime(expiryTime);
-//}
-//
-//// Save login detail
-//loginDetailRepository.save(loginDetail);
-//
-//// send email for OTP, TODO: make template for it
-//
-//var emailMessage = this.emailMessage.loginOtpMessage();
-//emailService.sendEmail(username, emailMessage.subject, emailMessage.body + otp);
-//
-//String encryptedUsername = AESEncryptUtility.encrypt(username);
-//return new EncryptedKeyGenericResponse(encryptedUsername, SuccessMessage.otpSentToEmail);
-//}
-//else {
-//throw new UnauthorizedException(ErrorConstants.incorrectPassword);
-//}
+
