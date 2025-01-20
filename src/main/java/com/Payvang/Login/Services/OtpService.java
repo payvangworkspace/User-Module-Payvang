@@ -54,15 +54,27 @@ public class OtpService {
             EmailResponse emailResponse=emailService.sendEmail(emailRequest);
            //response of mail
             System.out.println("Mail Response of OTP "+emailResponse);
-
+              
+            Otp otpdb = otpRepository.findByRecipient(phone);
+            
+            if(otpdb == null) {
+            	 Otp otpEntity = Otp.builder()
+                         .otp(otp)
+                         .triggerTime(java.sql.Timestamp.valueOf(triggerTime))
+                         .expiryTime(java.sql.Timestamp.valueOf(expiryTime))
+                         .recipient(phone)
+                         .build();
+      
+                 otpRepository.save(otpEntity); // Save the OTP entity
+            }
             // Save OTP details to the database
-            Otp otpEntity = Otp.builder()
-                    .otp(otp)
-                    .triggerTime(java.sql.Timestamp.valueOf(triggerTime))
-                    .expiryTime(java.sql.Timestamp.valueOf(expiryTime))
-                    .build();
- 
-            otpRepository.save(otpEntity); // Save the OTP entity
+            else {
+            	otpdb.setOtp(otp);
+            	otpdb.setExpiryTime(java.sql.Timestamp.valueOf(expiryTime));
+            	otpdb.setTriggerTime(java.sql.Timestamp.valueOf(triggerTime));
+            	otpRepository.save(otpdb);
+            	
+            }
 
 
  
@@ -81,11 +93,11 @@ public class OtpService {
         return String.valueOf(otp);
     }
 
-    public boolean validateOtp(String inputOtp) {
+    public boolean validateOtp(String inputOtp,String recipient) {
         try {
         	boolean response=false;
             // Fetch OTP entity from the database
-            Otp otpEntity = otpRepository.findByOtp(inputOtp)
+            Otp otpEntity = otpRepository.findByOtpAndRecipient(inputOtp,recipient)
                     .orElseThrow(() -> new InvalidRequestException("Invalid OTP."));
  
             // Check if the OTP has expired
