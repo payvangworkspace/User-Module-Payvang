@@ -3,6 +3,9 @@ package com.Payvang.Login.Services;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +15,12 @@ import com.Payvang.Login.Constants.UserType;
 import com.Payvang.Login.CustomExceptions.InvalidRequestException;
 import com.Payvang.Login.CustomExceptions.SystemException;
 import com.Payvang.Login.CustomExceptions.UnauthorizedException;
+import com.Payvang.Login.DataAccess.Models.EmailRequest;
+import com.Payvang.Login.DataAccess.Models.EmailResponse;
+import com.Payvang.Login.DataAccess.Models.MerchantSignup;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
 import com.Payvang.Login.DataAccess.Models.User;
-
+import com.Payvang.Login.External.Services.EmailService;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Repositories.UserRepository;
@@ -32,7 +38,15 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userrepository;
-
+	
+	
+	private Logger logger=LoggerFactory.getLogger(UserService.class);
+	
+	
+	
+	@Autowired
+	private EmailService emailService;
+ 
 	@Autowired
 	JwtUtil jwtutil;
 
@@ -43,6 +57,7 @@ public class UserService {
 			if (userbody.getUserRoleType().equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
 
 				responseObject = createUser(getUserInstance(userbody), UserType.RESELLER, "");
+				
 			} else {
 
 				responseObject = createUser(getUserInstance(userbody), UserType.MERCHANT, "");
@@ -198,6 +213,53 @@ public class UserService {
 		}
 
 	}
+	
+	
+	  public ResponseObject createMerchant(MerchantSignup userbody) {
+		   
+			ResponseObject responseObject = new ResponseObject();
+			try {
+				User user = new User();
+				user.setEmailId(userbody.getEmailId());
+				user.setBusinessName(userbody.getBusinessName());
+				user.setMobile(userbody.getMobile());
+				user.setIndustryCategory(userbody.getIndustryCategory());
+				user.setIndustrySubCategory(userbody.getIndustrySubCategory());
+				User userdata = userrepository.save(user);
+				if(userdata !=null) {
+					responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
+					responseObject.setResponseMessage("Merchant created Successfully");
+					
+				//Calling External Service to send email--Nitesh
+					EmailRequest emailRequest=EmailRequest.builder().to(userbody.getEmailId()).message("Congratulation Merchant, your account has been created successfully.").subject("Congurations").build();
+					EmailResponse emailResponse=emailService.sendEmail(emailRequest);
+					
+					logger.info("Email has been send successfully.");
+					
+					
+					
+					
+					
+					
+				}else {
+					responseObject.setResponseMessage("Somethingwent Wrong");
+				}
+				return responseObject;
+			} catch (Exception exception) {
+				exception.printStackTrace();
+
+				responseObject = new ResponseObject();
+				responseObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
+				responseObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
+			}
+
+			return responseObject;
+		}
+	    
+	
+	
+	
+	
 
 }
 
@@ -234,3 +296,6 @@ public class UserService {
 //else {
 //throw new UnauthorizedException(ErrorConstants.incorrectPassword);
 //}
+
+
+

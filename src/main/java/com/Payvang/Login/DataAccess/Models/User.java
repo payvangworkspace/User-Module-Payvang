@@ -26,21 +26,15 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
-@Table(name = "User",indexes = { @Index(name = "IDX_MYIDX1", columnList = "emailId,appId") })@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Table(name = "User", indexes = { @Index(name = "IDX_MYIDX1", columnList = "emailId,appId") })
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User implements Serializable {
 	private static final long serialVersionUID = 8476685067435231830L;
-
-	// Personal details
-//	@Id
-	
-	
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//	 private Long id;
-	 @Id
-	@Column(nullable=false,unique=true)
-	private String emailId;  
+	@Id
+	@Column(nullable = false, unique = true)
+	private String emailId;
 	private String password;
-	private String appId; 
+	private String appId;
 	private String businessName;
 	private String firstName;
 	private String lastName;
@@ -48,6 +42,7 @@ public class User implements Serializable {
 	private String contactPerson;
 
 	private String merchantType;
+
 	public Set<Roles> getRoles() {
 		return roles;
 	}
@@ -65,7 +60,7 @@ public class User implements Serializable {
 	@Transient
 	private String requestedBy;
 
-	//Contact Details
+	// Contact Details
 	private String mobile;
 	private boolean transactionSmsFlag;
 	private String telephoneNo;
@@ -75,12 +70,13 @@ public class User implements Serializable {
 	private String state;
 	private String country;
 	private String postalCode;
-	// Action	
+	// Action
 	/*
 	 * @Enumerated(EnumType.STRING) private ModeType modeType;
 	 */
 
 	private String comments;
+	@Column(columnDefinition = "TEXT")
 	private String whiteListIpAddress;
 
 	// Bank Details
@@ -98,11 +94,11 @@ public class User implements Serializable {
 	private String uploadedPhotoIdProof;
 	private String uploadedContractDocument;
 
-	//Account Activation
+	// Account Activation
 	private String accountValidationKey;
 	private boolean emailValidationFlag;
 
-	//business details
+	// business details
 	private String organisationType;
 	private String website;
 	private String multiCurrency;
@@ -118,16 +114,16 @@ public class User implements Serializable {
 	private String noOfTransactions;
 	private String amountOfTransactions;
 	private String attemptTrasacation;
-	//industry classification
+	// industry classification
 	private String industryCategory;
 	private String industrySubCategory;
 	private String webhookurl;
 
-	//Transaction Emailer 
-	private String  transactionEmailId;
+	// Transaction Emailer
+	private String transactionEmailId;
 	private boolean transactionEmailerFlag;
 
-	//Payment Flag
+	// Payment Flag
 	private boolean expressPayFlag;
 	private boolean merchantHostedFlag;
 	private boolean iframePaymentFlag;
@@ -137,10 +133,10 @@ public class User implements Serializable {
 	private boolean refundTransactionMerchantEmailFlag;
 	private boolean retryTransactionCustomeFlag;
 	private boolean surchargeFlag;
-	private String parentappId; 
+	private String parentappId;
 	// Settlement
 	private String settlementDay;
-	
+
 	// ISGPAY and Atom fields
 	private String terminalId;
 	private String encryptionKey;
@@ -148,20 +144,20 @@ public class User implements Serializable {
 	private String mccCode;
 	private String merchantVpa;
 
-	//saving last activity
+	// saving last activity
 	private String lastActionName;
 
-	//configurable From User Amount
+	// configurable From User Amount
 	private float extraRefundLimit;
 
-	//default currency 
+	// default currency
 	private String defaultCurrency;
 
-	//Amex field43
+	// Amex field43
 	private String amexSellerId;
 	private String mCC;
-	
-	//payment page default language 
+
+	// payment page default language
 	private String defaultLanguage;
 
 	@Enumerated(EnumType.STRING)
@@ -170,17 +166,17 @@ public class User implements Serializable {
 	/*
 	 * @Enumerated(EnumType.STRING) private UserType userType;
 	 */
-	
+
 	@Enumerated(EnumType.STRING)
 	private UserType userType;
-	
-	@OneToMany(targetEntity=Roles.class,fetch = FetchType.EAGER,cascade = CascadeType.ALL)	
+
+	@OneToMany(targetEntity = Roles.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Roles> roles = new HashSet<Roles>();
-	
-	public User(){
-		
+
+	public User() {
+
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -221,7 +217,6 @@ public class User implements Serializable {
 		this.website = website;
 	}
 
-	
 	public String getMerchantType() {
 		return merchantType;
 	}
@@ -497,7 +492,6 @@ public class User implements Serializable {
 	 * 
 	 * public void setUserType(UserType userType) { this.userType = userType; }
 	 */
-	
 
 	public String getBusinessName() {
 		return businessName;
@@ -514,6 +508,7 @@ public class User implements Serializable {
 	public void setActivationDate(Date activationDate) {
 		this.activationDate = activationDate;
 	}
+
 	public String getMultiCurrency() {
 		return multiCurrency;
 	}
@@ -618,7 +613,6 @@ public class User implements Serializable {
 		this.transactionEmailerFlag = transactionEmailerFlag;
 	}
 
-	
 	public boolean isExpressPayFlag() {
 		return expressPayFlag;
 	}
@@ -635,8 +629,7 @@ public class User implements Serializable {
 		return refundTransactionCustomerEmailFlag;
 	}
 
-	public void setRefundTransactionCustomerEmailFlag(
-			boolean refundTransactionCustomerEmailFlag) {
+	public void setRefundTransactionCustomerEmailFlag(boolean refundTransactionCustomerEmailFlag) {
 		this.refundTransactionCustomerEmailFlag = refundTransactionCustomerEmailFlag;
 	}
 
@@ -644,8 +637,7 @@ public class User implements Serializable {
 		return refundTransactionMerchantEmailFlag;
 	}
 
-	public void setRefundTransactionMerchantEmailFlag(
-			boolean refundTransactionMerchantEmailFlag) {
+	public void setRefundTransactionMerchantEmailFlag(boolean refundTransactionMerchantEmailFlag) {
 		this.refundTransactionMerchantEmailFlag = refundTransactionMerchantEmailFlag;
 	}
 
@@ -673,8 +665,7 @@ public class User implements Serializable {
 		return transactionAuthenticationEmailFlag;
 	}
 
-	public void setTransactionAuthenticationEmailFlag(
-			boolean transactionAuthenticationEmailFlag) {
+	public void setTransactionAuthenticationEmailFlag(boolean transactionAuthenticationEmailFlag) {
 		this.transactionAuthenticationEmailFlag = transactionAuthenticationEmailFlag;
 	}
 
@@ -750,14 +741,12 @@ public class User implements Serializable {
 		this.defaultLanguage = defaultLanguage;
 	}
 
-/*	public BusinessType getBusinessType() {
-		return businessType;
-	}
-
-	public void setBusinessType(BusinessType businessType) {
-		this.businessType = businessType;
-	}
-*/
+	/*
+	 * public BusinessType getBusinessType() { return businessType; }
+	 * 
+	 * public void setBusinessType(BusinessType businessType) { this.businessType =
+	 * businessType; }
+	 */
 	public boolean isSurchargeFlag() {
 		return surchargeFlag;
 	}
@@ -781,7 +770,7 @@ public class User implements Serializable {
 	public void setIndustrySubCategory(String industrySubCategory) {
 		this.industrySubCategory = industrySubCategory;
 	}
-	
+
 	public String getRequestedBy() {
 		return requestedBy;
 	}
@@ -885,5 +874,4 @@ public class User implements Serializable {
 		this.userType = userType;
 	}
 
-	
 }
