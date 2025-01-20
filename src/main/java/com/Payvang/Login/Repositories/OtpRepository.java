@@ -9,5 +9,7 @@ import com.Payvang.Login.DataAccess.Models.Otp;
 
 @Repository
 public interface OtpRepository extends CrudRepository<Otp, Integer> {
-	Optional<Otp> findByOtp(String otp);
+	Optional<Otp> findByOtpAndRecipient(String otp,String recipient);
+
+	Otp findByRecipient(String phone);
 }

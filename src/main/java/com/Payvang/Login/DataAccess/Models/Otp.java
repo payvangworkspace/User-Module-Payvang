@@ -35,4 +35,7 @@ public class Otp {
 
 	@Column(nullable = false)
 	private Date expiryTime;
+	
+	@Column(nullable=false)
+	private String recipient;
 }
