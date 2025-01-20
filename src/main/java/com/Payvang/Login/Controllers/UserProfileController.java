@@ -1,4 +1,4 @@
-package com.Payvang.Login.Services;
+package com.Payvang.Login.Controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +21,7 @@ import com.Payvang.Login.DataAccess.Models.User;
 import com.Payvang.Login.DataAccess.Models.UserProfileResponse;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Repositories.UserRepository;
+import com.Payvang.Login.Services.UserService;
 import com.Payvang.Login.Util.JwtUtil;
 
 import io.jsonwebtoken.Claims;

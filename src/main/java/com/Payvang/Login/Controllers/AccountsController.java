@@ -1,4 +1,4 @@
-package com.Payvang.Login.Services;
+package com.Payvang.Login.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import com.Payvang.Login.DataAccess.Models.User;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Repositories.UserRepository;
+import com.Payvang.Login.Services.UserService;
 import com.Payvang.Login.Util.ErrorType;
 
 @CrossOrigin
@@ -23,7 +24,7 @@ public class AccountsController {
 
 	@Autowired
 	private UserService userService;
-
+	
 	@PostMapping("/merchant")
 	public ResponseEntity<ResponseObject> createNewUser(@RequestBody SignupAction userbody) {
 
