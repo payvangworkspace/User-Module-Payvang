@@ -38,32 +38,39 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userrepository;
-	
-	
-	private Logger logger=LoggerFactory.getLogger(UserService.class);
-	
-	
-	
+
+	private Logger logger = LoggerFactory.getLogger(UserService.class);
+
 	@Autowired
 	private EmailService emailService;
- 
+
 	@Autowired
 	JwtUtil jwtutil;
 
 	public ResponseObject createNewUser(SignupAction userbody) {
 		ResponseObject responseObject = null;
 		try {
+			User user = userrepository.getByEmailId(userbody.getEmailId());
+			if (user != null) {
+				String usertype = user.getUserType().name();
 
-			if (userbody.getUserRoleType().equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
+				if (usertype.equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
 
-				responseObject = createUser(getUserInstance(userbody), UserType.RESELLER, "");
-				
-			} else {
+					responseObject = createUser(getUserInstance(userbody), UserType.RESELLER, "");
 
-				responseObject = createUser(getUserInstance(userbody), UserType.MERCHANT, "");
-			}
+				} else {
 
-			if (!ErrorType.SUCCESS.getResponseCode().equals(responseObject.getResponseCode())) {
+					responseObject = createUser(getUserInstance(userbody), UserType.MERCHANT, "");
+				}
+
+				if (!ErrorType.SUCCESS.getResponseCode().equals(responseObject.getResponseCode())) {
+					return responseObject;
+				}
+
+			}else {
+				responseObject = new ResponseObject();
+				responseObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
+				responseObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
 				return responseObject;
 			}
 
@@ -79,16 +86,17 @@ public class UserService {
 	}
 
 	private User getUserInstance(SignupAction userbody) {
-		User user = new User();
+		User user = userrepository.getByEmailId(userbody.getEmailId());
+		
 		user.setEmailId(userbody.getEmailId().toLowerCase());
 		user.setPassword(userbody.getPassword());
-		user.setMobile(userbody.getMobile());
-		user.setBusinessName(userbody.getBusinessName());
-		if (userbody.getUserRoleType().equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
-		} else {
-			user.setIndustryCategory(userbody.getIndustryCategory());
-			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
-		}
+		//user.setMobile(userbody.getMobile());
+		//user.setBusinessName(userbody.getBusinessName());
+//		if (userbody.getUserRoleType().equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
+//		} else {
+//			user.setIndustryCategory(userbody.getIndustryCategory());
+//			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
+//		}
 		return user;
 	}
 
@@ -97,21 +105,21 @@ public class UserService {
 
 		SaltFileManager saltFileManager = new SaltFileManager();
 
-		ResponseObject responseObject = new ResponseObject();
+//		ResponseObject responseObject = new ResponseObject();
 		ResponseObject responseActionObject = new ResponseObject();
 
 		Date date = new Date();
 		String salt = SaltFactory.generateRandomSalt();
 
-		responseObject = checkuser(user.getEmailId());
+//		responseObject = checkuser(user.getEmailId());
 
-		if (ErrorType.USER_AVAILABLE.getResponseCode().equals(responseObject.getResponseCode())) {
+//		if (ErrorType.USER_AVAILABLE.getResponseCode().equals(responseObject.getResponseCode())) {
 
 			if (userType.equals(UserType.RESELLER)) {
 				user.setResellerId(TransactionManager.getNewTransactionId());
 			}
 
-			user.setUserType(userType);
+			//user.setUserType(userType);
 			user.setUserStatus(UserStatusType.PENDING);
 			user.setAppId(getappId());
 			user.setAccountValidationKey(TransactionManager.getNewTransactionId());
@@ -136,10 +144,10 @@ public class UserService {
 			responseActionObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
 			responseActionObject.setAccountValidationID(user.getAccountValidationKey());
 			responseActionObject.setEmail(user.getEmailId());
-		} else {
-			responseActionObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
-			responseActionObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
-		}
+//		} else {
+//			responseActionObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
+//			responseActionObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
+//		}
 		return responseActionObject;
 	}
 
@@ -206,66 +214,66 @@ public class UserService {
 		Optional<User> user = userrepository.findByEmailId(emailid);
 		if (user.isPresent()) {
 			User userdata = user.get();
-			System.out.println("here is user data "+ userdata);
+			System.out.println("here is user data " + userdata);
 			return userdata;
 		} else {
 			throw new InvalidRequestException(ErrorConstants.usernamePasswordNotFound);
 		}
 
 	}
-	
-	
-	  public ResponseObject createMerchant(MerchantSignup userbody) {
-		   
-			ResponseObject responseObject = new ResponseObject();
-			try {
-				User user = new User();
-				String emailId = userbody.getEmailId();
-				User userdb = userrepository.getByEmailId(emailId);
-				if(userdb != null) {
-					responseObject.setResponseMessage("User Already Exist");
-					return responseObject;
-				}
-				user.setEmailId(emailId);
-				user.setBusinessName(userbody.getBusinessName());
-				user.setMobile(userbody.getMobile());
-				user.setIndustryCategory(userbody.getIndustryCategory());
-				user.setIndustrySubCategory(userbody.getIndustrySubCategory());
-				User userdata = userrepository.save(user);
-				if(userdata !=null) {
-					responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
-					responseObject.setResponseMessage("Merchant created Successfully");
-					
-				//Calling External Service to send email--Nitesh
-					EmailRequest emailRequest=EmailRequest.builder().to(userbody.getEmailId()).message("Congratulation Merchant, your account has been created successfully.").subject("Congurations").build();
-					EmailResponse emailResponse=emailService.sendEmail(emailRequest);
-					
-					logger.info("Email has been send successfully.");
-					
-					
-					
-					
-					
-					
-				}else {
-					responseObject.setResponseMessage("Somethingwent Wrong");
-				}
+
+	public ResponseObject createMerchant(MerchantSignup userbody) {
+
+		ResponseObject responseObject = new ResponseObject();
+		try {
+			User user = new User();
+			String emailId = userbody.getEmailId();
+			if((userbody.getEmailId() == null) || (userbody.getUserRoleType()==null)) {
+				responseObject.setResponseMessage("EmailId or RoleType is Empty");
 				return responseObject;
-			} catch (Exception exception) {
-				exception.printStackTrace();
-
-				responseObject = new ResponseObject();
-				responseObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
-				responseObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
 			}
+			User userdb = userrepository.getByEmailId(emailId);
+			if (userdb != null) {
+				responseObject.setResponseMessage("User Already Exist");
+				return responseObject;
+			}
+			if(userbody.getUserRoleType().equals(CrmFieldConstants.USER_RESELLER_TYPE.getValue())) {
+				user.setUserType(UserType.RESELLER);
+			}else {
+				user.setUserType(UserType.MERCHANT);
+			}
+			user.setEmailId(emailId);
+			user.setBusinessName(userbody.getBusinessName());
+			user.setMobile(userbody.getMobile());
+			user.setIndustryCategory(userbody.getIndustryCategory());
+			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
+			User userdata = userrepository.save(user);
+			if (userdata != null) {
+				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
+				responseObject.setResponseMessage("Merchant created Successfully");
 
+				// Calling External Service to send email--Nitesh
+				EmailRequest emailRequest = EmailRequest.builder().to(userbody.getEmailId())
+						.message("Congratulation Merchant, your account has been created successfully.")
+						.subject("Congurations").build();
+				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
+
+				logger.info("Email has been send successfully.");
+
+			} else {
+				responseObject.setResponseMessage("Somethingwent Wrong");
+			}
 			return responseObject;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+
+			responseObject = new ResponseObject();
+			responseObject.setResponseCode(ErrorType.USER_UNAVAILABLE.getResponseCode());
+			responseObject.setResponseMessage(ErrorType.USER_UNAVAILABLE.getResponseMessage());
 		}
-	    
-	
-	
-	
-	
+
+		return responseObject;
+	}
 
 }
 
@@ -302,6 +310,3 @@ public class UserService {
 //else {
 //throw new UnauthorizedException(ErrorConstants.incorrectPassword);
 //}
-
-
-

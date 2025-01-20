@@ -1,19 +1,16 @@
 package com.Payvang.Login.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
-import com.Payvang.Login.DataAccess.Models.User;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
-import com.Payvang.Login.Repositories.UserRepository;
 import com.Payvang.Login.Services.UserService;
 import com.Payvang.Login.Util.ErrorType;
 
@@ -27,13 +24,21 @@ public class AccountsController {
 	
 	@PostMapping("/merchant")
 	public ResponseEntity<ResponseObject> createNewUser(@RequestBody SignupAction userbody) {
-
+		  try {
 		ResponseObject responseObject = userService.createNewUser(userbody);
 
 		if (!ErrorType.SUCCESS.getResponseCode().equals(responseObject.getResponseCode())) {
 			return ResponseEntity.badRequest().body(responseObject);
 		}
 		return ResponseEntity.ok(responseObject);
+		  } catch (Exception e) {
+		       
+                e.printStackTrace();
+		        ResponseObject errorResponse = new ResponseObject();
+		        errorResponse.setResponseCode(ErrorType.DATABASE_ERROR.getResponseCode());
+		        errorResponse.setResponseMessage("An unexpected error occurred during merchant sign up.");
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+		    }
 	}
 	
 	 @PostMapping("/login")
