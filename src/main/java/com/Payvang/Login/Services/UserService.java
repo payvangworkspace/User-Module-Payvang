@@ -220,7 +220,13 @@ public class UserService {
 			ResponseObject responseObject = new ResponseObject();
 			try {
 				User user = new User();
-				user.setEmailId(userbody.getEmailId());
+				String emailId = userbody.getEmailId();
+				User userdb = userrepository.getByEmailId(emailId);
+				if(userdb != null) {
+					responseObject.setResponseMessage("User Already Exist");
+					return responseObject;
+				}
+				user.setEmailId(emailId);
 				user.setBusinessName(userbody.getBusinessName());
 				user.setMobile(userbody.getMobile());
 				user.setIndustryCategory(userbody.getIndustryCategory());
