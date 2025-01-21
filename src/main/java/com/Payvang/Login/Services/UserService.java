@@ -249,7 +249,7 @@ public class UserService {
 			user.setIndustryCategory(userbody.getIndustryCategory());
 			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
 			User userdata = userrepository.save(user);
-			if (userdata != null) {
+			
 				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
 				responseObject.setResponseMessage("Merchant created Successfully");
 				
@@ -263,10 +263,7 @@ public class UserService {
 				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
 
 				logger.info("Email has been send successfully.");
-
-			} else {
-				responseObject.setResponseMessage("Something went Wrong");
-			}
+			
 			return responseObject;
 		} catch (Exception exception) {
 			exception.printStackTrace();
