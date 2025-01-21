@@ -24,6 +24,7 @@ import com.Payvang.Login.External.Services.EmailService;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Repositories.UserRepository;
+import com.Payvang.Login.Util.AESEncryptUtility;
 import com.Payvang.Login.Util.ErrorType;
 import com.Payvang.Login.Util.Hasher;
 import com.Payvang.Login.Util.JwtUtil;
@@ -248,21 +249,21 @@ public class UserService {
 			user.setIndustryCategory(userbody.getIndustryCategory());
 			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
 			User userdata = userrepository.save(user);
-			if (userdata != null) {
+			
 				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
 				responseObject.setResponseMessage("Merchant created Successfully");
-
+				
+				
+				String encryptedemail = AESEncryptUtility.encrypt(emailId);
+                   
 				// Calling External Service to send email--Nitesh
 				EmailRequest emailRequest = EmailRequest.builder().to(userbody.getEmailId())
-						.message("Congratulation Merchant, your account has been registered successfully, Please validate your account.")
+						.message("Congratulation Merchant, your account has been registered successfully. \n Please Verify your Mobile Number with the link \n http://localhost:3000/verify?id="+encryptedemail)
 						.subject("Congurations your account has been registered.").build();
 				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
 
 				logger.info("Email has been send successfully.");
-
-			} else {
-				responseObject.setResponseMessage("Somethingwent Wrong");
-			}
+			
 			return responseObject;
 		} catch (Exception exception) {
 			exception.printStackTrace();
