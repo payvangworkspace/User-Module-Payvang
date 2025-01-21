@@ -254,14 +254,14 @@ public class UserService {
 
 				// Calling External Service to send email--Nitesh
 				EmailRequest emailRequest = EmailRequest.builder().to(userbody.getEmailId())
-						.message("Congratulation Merchant, your account has been registered successfully, Please validate your account.")
+						.message("Congratulation Merchant, your account has been registered successfully. \n Please Verify your Mobile Number with the link \n http://localhost:3000/verify")
 						.subject("Congurations your account has been registered.").build();
 				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
 
 				logger.info("Email has been send successfully.");
 
 			} else {
-				responseObject.setResponseMessage("Somethingwent Wrong");
+				responseObject.setResponseMessage("Something went Wrong");
 			}
 			return responseObject;
 		} catch (Exception exception) {
