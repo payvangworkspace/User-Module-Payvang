@@ -124,4 +124,12 @@ public class OtpService {
     }
  
     
+    public String maskMobileNumber(String mobileNumber) {
+        if (mobileNumber == null || mobileNumber.length() < 10) {
+            throw new IllegalArgumentException("Invalid mobile number");
+        }
+        String masked = "******" + mobileNumber.substring(6);
+        return masked;
+    }
+    
 }
