@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.Payvang.Login.DataAccess.Models.Merchant;
+import com.Payvang.Login.DataAccess.Models.MerchantBank;
 import com.Payvang.Login.Models.MerchantBankRequest;
 import com.Payvang.Login.Models.MerchantRequest;
 import com.Payvang.Login.Services.MerchantBankService;
@@ -67,4 +68,26 @@ public class MerchantController {
 	        }
 	    }
 
+	 
+	 @GetMapping("bank/{accountId}")
+	    public ResponseEntity<MerchantBank> getMerchantBank(@PathVariable ("accountId")Long accountId) {
+	        try {
+	            MerchantBank merchantBank = merchantBankService.getMerchantBankById(accountId);
+	            return new ResponseEntity<>(merchantBank, HttpStatus.OK);
+	        } catch (Exception e) {
+	        	e.printStackTrace();
+	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	        }
+	    }
+
+	   
+	    @PutMapping("updatebank/{accountId}")
+	    public ResponseEntity<String> updateMerchantBank(@PathVariable ("accountId")Long accountId, @RequestBody MerchantBankRequest request) {
+	        try {
+	            merchantBankService.updateMerchantBank(accountId, request);
+	            return new ResponseEntity<>("Merchant Bank account updated successfully", HttpStatus.OK);
+	        } catch (Exception e) {
+	            return new ResponseEntity<>("Error while updating merchant bank account", HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
 }

@@ -2,6 +2,11 @@ package com.Payvang.Login.DataAccess.Models;
 
 
 import java.time.LocalDateTime;
+
+import com.Payvang.Login.Models.AccountStatus;
+import com.Payvang.Login.Models.AccountType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,6 +28,7 @@ public class MerchantBank {
     @Column(name = "account_id")
     private Long accountId;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id", referencedColumnName = "merchant_id", nullable = false)
     private Merchant merchant; 
@@ -44,11 +50,11 @@ public class MerchantBank {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
-    private AccountType accountType; // Enum for account types
+    private AccountType accountType; 
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private AccountStatus status; // Enum for account status
+    private AccountStatus status; 
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -147,14 +153,8 @@ public class MerchantBank {
     }
 
    
-    public enum AccountType {
-        SAVINGS,
-        CURRENT
-    }
+   
 
-    public enum AccountStatus {
-        VERIFIED,
-        PENDING
-    }
+   
 }
 
