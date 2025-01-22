@@ -40,8 +40,8 @@ public class SecurityConfigurer {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/auth/merchantSignUp","api/auth/login","/auth/otp/generate","/auth/otp/verify","api/auth/merchant","/auth/otp/email").permitAll() // Allow public access
-                .requestMatchers("/api/other").hasRole("ADMIN") // Allow only ADMIN1 to access this endpoint          
+                .requestMatchers("/auth/merchantSignUp","/auth/otp/generate","/auth/otp/verify","/auth/otp/email","api/**").permitAll() // Allow public access
+                .requestMatchers("/auth/other").hasRole("ADMIN") // Allow only ADMIN1 to access this endpoint          
                 .anyRequest().authenticated()) 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(handler -> handler.authenticationEntryPoint(new AuthEntryPoint()));
