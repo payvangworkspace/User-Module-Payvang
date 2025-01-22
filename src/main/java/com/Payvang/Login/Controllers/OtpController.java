@@ -11,6 +11,7 @@ import com.Payvang.Login.Models.MobileRequest;
 import com.Payvang.Login.Models.OtpRequest;
 import com.Payvang.Login.Repositories.UserRepository;
 import com.Payvang.Login.Services.OtpService;
+import com.Payvang.Login.Services.UserValidationService;
 import com.Payvang.Login.Util.AESEncryptUtility;
 
 @RestController
@@ -22,12 +23,20 @@ public class OtpController {
 
 	@Autowired
 	private UserRepository userrepository;
+	
+	@Autowired
+	private UserValidationService userValidationService;
 
 	@PostMapping("/verify")
 	public ResponseEntity<String> verifyOtp(@RequestBody OtpRequest otpRequest) {
 		try {
 			boolean isValid = otpService.validateOtp(otpRequest.getOtp(), otpRequest.getRecipient());
 			if (isValid) {
+				//set the email validation as true
+				boolean res=userValidationService.setMobileValid(otpRequest.getRecipient());
+				if(res) {
+					System.out.println("Mobile Validated and set successfully..");
+				}
 				return ResponseEntity.ok("OTP verification successful.");
 			} else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired OTP.");
@@ -42,7 +51,7 @@ public class OtpController {
 	}
 
 	@PostMapping("/email")
-	public ResponseEntity<?> validateEmail(@RequestParam("emailId") String emailId) {
+	public ResponseEntity<?> validateEmail(@RequestParam("id") String emailId) {
 		ResponseObject response = new ResponseObject();
 		try {
 
@@ -56,6 +65,11 @@ public class OtpController {
 			boolean otpSent = otpService.sendOtp(decryptedEmail);
 			if (otpSent) {
 				response.setResponseMessage("Email validated and OTP sent successfully to " + maskedMobileNumber);
+				//set the email validation as true
+				boolean res=userValidationService.setEmailValid(decryptedEmail);
+				if(res) {
+					System.out.println("Email Validated and set successfully..");
+				}
 				response.setResponseCode("SUCCESS");
 			} else {
 				response.setResponseMessage("Failed to send OTP. Please try again.");
@@ -93,4 +107,12 @@ public class OtpController {
 //						.body("An unexpected error occurred while generating the OTP.");
 //			}
 //		}
+	
+	
+	
+	
+	
+	
+	
+	
 }
