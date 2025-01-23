@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.Payvang.Login.Constants.CrmFieldConstants;
@@ -44,6 +45,12 @@ public class UserService {
 
 	@Autowired
 	private EmailService emailService;
+	
+	
+	
+	@Value("${password.user.dummy}")
+	private String dummyPassword;
+	
 	
 	
 	@Autowired
@@ -267,7 +274,7 @@ public class UserService {
                    
 				// Calling External Service to send email--Nitesh
 				EmailRequest emailRequest = EmailRequest.builder().to(userbody.getEmailId())
-						.message("Congratulation Merchant, your account has been registered successfully. \n Please Verify your Mobile Number with the link \n http://localhost:3000/verify?id="+encryptedemail)
+						.message("Congratulation Merchant, your account has been registered successfully. \n Please Verify your Mobile Number with the link \n http://localhost:3000/payvang/otp?id="+encryptedemail)
 						.subject("Congratulations your account has been registered.").build();
 				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
 
@@ -285,6 +292,55 @@ public class UserService {
 		return responseObject;
 	}
 
-}
+	
+	
+	
+	//Creating the dummy password and validating fields
+	public boolean CreateDummyPassword(String email) {
+		boolean res=false;
+		//setting the validation as true for mobile
+		
+		try {
+	boolean response=userValidationService.setEmailValid(email);
+	if(response) {
+		System.out.println("Mobile Validated successfully for now.");
+		//setting the password
+		
+		SignupAction signup=SignupAction.builder().emailId(email).password(dummyPassword).build();
+		createNewUser(signup);
+		//sending mail to user about his dummy password creation
+		EmailRequest emailRequest=EmailRequest.builder().subject("Verification Done Successfully.").message("Your Verification has been done successfully. \n Your Dummy password for now is "+dummyPassword).to(email).build();
+		emailService.sendEmail(emailRequest);
+		res=true;
+	}
+		}
+	catch(Exception ex) {
+		ex.printStackTrace();
+	}
+		return res;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 

@@ -1,5 +1,8 @@
 package com.Payvang.Login.Models;
 
+import lombok.Builder;
+
+@Builder
 public class SignupAction {
 
 	private String emailId;
