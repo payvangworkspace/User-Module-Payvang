@@ -5,9 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.Payvang.Login.DataAccess.Models.EmailRequest;
+import com.Payvang.Login.DataAccess.Models.EmailVerifyRequest;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
 import com.Payvang.Login.DataAccess.Models.User;
-import com.Payvang.Login.Models.MobileRequest;
 import com.Payvang.Login.Models.OtpRequest;
 import com.Payvang.Login.Repositories.UserRepository;
 import com.Payvang.Login.Services.OtpService;
@@ -16,6 +17,7 @@ import com.Payvang.Login.Util.AESEncryptUtility;
 
 @RestController
 @RequestMapping("/auth/otp")
+@CrossOrigin
 public class OtpController {
 
 	@Autowired
@@ -51,11 +53,17 @@ public class OtpController {
 	}
 
 	@PostMapping("/email")
-	public ResponseEntity<?> validateEmail(@RequestParam("id") String emailId) {
+	public ResponseEntity<?> validateEmail(@RequestParam("id") String id) {
+		
+		System.out.println("Request received from the frontend");
+		String formattedId=id.replace(" ", "+");
+		System.out.println(formattedId);
+		System.out.println(id);
+		
 		ResponseObject response = new ResponseObject();
 		try {
 
-			String decryptedEmail = AESEncryptUtility.decrypt(emailId);
+			String decryptedEmail = AESEncryptUtility.decrypt(formattedId);
 
 			User user = userrepository.findByEmailId(decryptedEmail)
 					.orElseThrow(() -> new RuntimeException("User not found"));

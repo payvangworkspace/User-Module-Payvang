@@ -45,9 +45,7 @@ public class UserService {
 
 	@Autowired
 	private EmailService emailService;
-	
-	
-	
+
 	@Value("${password.user.dummy}")
 	private String dummyPassword;
 	
