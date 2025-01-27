@@ -2,9 +2,9 @@ package com.Payvang.Login.Services;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.Payvang.Login.CustomExceptions.CustomException;
@@ -14,40 +14,69 @@ import com.Payvang.Login.Repositories.NotificationPreferences;
 
 @Service
 public class NotificationPreferenceService {
-	
-	
-	@Autowired
-	private NotificationPreferences notificationPreferencesRepo;
-	
-	
-	public MerchantNotificationPreferences savePreference(NotificationPreferenceRequest notificationPreferenceRequest) {
 
-		  // Get the current date and time
-        LocalDateTime now = LocalDateTime.now();
+    @Autowired
+    private NotificationPreferences notificationPreferencesRepo;
 
-        // Convert to Timestamp
-        Timestamp timestamp = Timestamp.valueOf(now);
-        
-        //getting merchant id from 
-        	
-		MerchantNotificationPreferences merchantNotificationPreferences=MerchantNotificationPreferences.builder().channelEmail(notificationPreferenceRequest.isChannelEmail()).channelInApp(notificationPreferenceRequest.isChannelInApp()).channelSms(notificationPreferenceRequest.isChannelSms())
-				.createdAt(timestamp).merchantId(notificationPreferenceRequest.getMerchantId())
-				.build();
-		
-		//saving into db
-		MerchantNotificationPreferences merchantNotificationPreferences2=notificationPreferencesRepo.save(merchantNotificationPreferences);
-		return merchantNotificationPreferences2;
-		
-		
-	}
-	
-	public MerchantNotificationPreferences getMerchantNotificationPreference(int merchantId) {
-		MerchantNotificationPreferences merchantNotificationPreferences=notificationPreferencesRepo.findByMerchantId(merchantId).orElseThrow(()->new CustomException("Notification Preference does not exist for this merchant"));
-		return merchantNotificationPreferences;
-	}
-	
-	
-	
-	
+    public MerchantNotificationPreferences savePreference(NotificationPreferenceRequest notificationPreferenceRequest) {
+        try {
+            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
 
+            MerchantNotificationPreferences preferences = MerchantNotificationPreferences.builder()
+                .merchantId(notificationPreferenceRequest.getMerchantId())
+                .channelSms(notificationPreferenceRequest.isChannelSms())
+                .channelEmail(notificationPreferenceRequest.isChannelEmail())
+                .channelWhatsapp(notificationPreferenceRequest.isChannelWhatsapp())
+                .channelInApp(notificationPreferenceRequest.isChannelInApp())
+                .createdAt(timestamp)
+                .build();
+
+            return notificationPreferencesRepo.save(preferences);
+        } catch (DataAccessException e) {
+            throw new CustomException("Error saving preferences: " + e.getMessage());
+        }
+    }
+
+    public MerchantNotificationPreferences getMerchantNotificationPreference(int merchantId) {
+        try {
+            return notificationPreferencesRepo.findByMerchantId(merchantId)
+                .orElseThrow(() -> new CustomException("Notification preference not found for merchant ID: " + merchantId));
+        } catch (DataAccessException e) {
+            throw new CustomException("Error retrieving preferences: " + e.getMessage());
+        }
+    }
+
+    public MerchantNotificationPreferences updateMerchantPreference(NotificationPreferenceRequest notificationPreferenceRequest, int merchantId) {
+        try {
+            MerchantNotificationPreferences existingPreferences = notificationPreferencesRepo.findByMerchantId(merchantId)
+                .orElseThrow(() -> new CustomException("Notification preference not found for merchant ID: " + merchantId));
+
+            existingPreferences.setChannelSms(notificationPreferenceRequest.isChannelSms());
+            existingPreferences.setChannelEmail(notificationPreferenceRequest.isChannelEmail());
+            existingPreferences.setChannelWhatsapp(notificationPreferenceRequest.isChannelWhatsapp());
+            existingPreferences.setChannelInApp(notificationPreferenceRequest.isChannelInApp());
+            existingPreferences.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+            return notificationPreferencesRepo.save(existingPreferences);
+        } catch (DataAccessException e) {
+            throw new CustomException("Error updating preferences: " + e.getMessage());
+        }
+    }
+
+    public MerchantNotificationPreferences patchMerchantPreference(NotificationPreferenceRequest notificationPreferenceRequest, int merchantId) {
+        try {
+            MerchantNotificationPreferences existingPreferences = notificationPreferencesRepo.findByMerchantId(merchantId)
+                .orElseThrow(() -> new CustomException("Notification preference not found for merchant ID: " + merchantId));
+
+            existingPreferences.setChannelSms(notificationPreferenceRequest.isChannelSms());
+            existingPreferences.setChannelEmail(notificationPreferenceRequest.isChannelEmail());
+            existingPreferences.setChannelWhatsapp(notificationPreferenceRequest.isChannelWhatsapp());
+            existingPreferences.setChannelInApp(notificationPreferenceRequest.isChannelInApp());
+            existingPreferences.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+            return notificationPreferencesRepo.save(existingPreferences);
+        } catch (DataAccessException e) {
+            throw new CustomException("Error patching preferences: " + e.getMessage());
+        }
+    }
 }

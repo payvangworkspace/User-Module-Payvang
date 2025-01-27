@@ -17,4 +17,7 @@ public class NotificationPreferenceRequest {
 	private boolean channelEmail;
 	private boolean channelWhatsapp;
 	private boolean channelInApp;
+	
+	
+	
 	}

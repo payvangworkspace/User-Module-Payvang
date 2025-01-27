@@ -26,7 +26,8 @@ public class MerchantNotificationPreferences {
 	private boolean channelSms;
 	private boolean channelEmail;
 	private boolean channelInApp;
+	private boolean channelWhatsapp;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
-	
+
 	}

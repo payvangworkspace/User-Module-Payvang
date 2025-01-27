@@ -53,7 +53,7 @@ public class AccountsController {
 	        }
 	        return ResponseEntity.ok(responseObject);
 	    }
-	 
+	               
 	 
 	@PostMapping("/random-password")
 	public ResponseEntity<?>generateRandomPassword(@RequestBody EmailVerifyRequest emailVerifyRequest){
