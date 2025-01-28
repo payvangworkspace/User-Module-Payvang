@@ -17,28 +17,28 @@ public class Merchant {
     @Column(name = "merchant_id")
     private Long merchantId;
 
-    @Column(name = "business_name", nullable = false, length = 255)
+    @Column(name = "business_name", length = 255)
     private String businessName;
 
-    @Column(name = "contact_name", nullable = false, length = 150)
+    @Column(name = "contact_name", length = 150)
     private String contactName;
 
-    @Column(name = "contact_email", nullable = false, length = 150)
+    @Column(name = "contact_email", length = 150)
     private String contactEmail;
 
-    @Column(name = "contact_phone", nullable = false, length = 15)
+    @Column(name = "contact_phone", length = 15)
     private String contactPhone;
 
-    @Column(name = "address", nullable = false, length = 255)
+    @Column(name = "address", length = 255)
     private String address;
 
     @Column(name = "website", length = 255)
     private String website;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
  
