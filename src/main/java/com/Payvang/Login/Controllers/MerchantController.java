@@ -1,9 +1,12 @@
 package com.Payvang.Login.Controllers;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.Payvang.Login.CustomExceptions.MerchantNotFoundException;
 import com.Payvang.Login.DataAccess.Models.Merchant;
 import com.Payvang.Login.DataAccess.Models.MerchantBank;
 import com.Payvang.Login.Models.MerchantBankRequest;
+import com.Payvang.Login.Models.MerchantDTO;
 import com.Payvang.Login.Models.MerchantRequest;
 import com.Payvang.Login.Services.MerchantBankService;
 import com.Payvang.Login.Services.MerchantService;
@@ -90,4 +96,17 @@ public class MerchantController {
 	            return new ResponseEntity<>("Error while updating merchant bank account", HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }
+	    
+	    @PatchMapping("/partially/{id}")
+	    public ResponseEntity<?> updateMerchantFields(@PathVariable("id") Long id,@RequestBody MerchantDTO updates) {
+	        try {
+	            Merchant updatedMerchant =  merchantservice.updateMerchant(id, updates);
+	            return ResponseEntity.ok(updatedMerchant);
+	        } catch (MerchantNotFoundException e) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating merchant details");
+	        }
+	    }
+	
 }
