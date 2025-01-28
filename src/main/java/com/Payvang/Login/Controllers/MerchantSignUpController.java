@@ -22,7 +22,6 @@ public class MerchantSignUpController {
 	@Autowired
 	UserService userService;
 	
-	
 	@PostMapping("/merchantSignUp")
 	public ResponseEntity<ResponseObject> createNewUser(@RequestBody MerchantSignup userbody) {
 	    try {

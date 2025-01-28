@@ -44,6 +44,11 @@ public class UserService {
 
 	@Autowired
 	private EmailService emailService;
+	
+	
+	@Autowired
+	private UserValidationService userValidationService;
+	
 
 	@Autowired
 	JwtUtil jwtutil;
@@ -253,13 +258,17 @@ public class UserService {
 				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
 				responseObject.setResponseMessage("Merchant created Successfully");
 				
+				//setting the user validation entry to db
+				userValidationService.saveUserValidation(emailId);
+				
+				
 				
 				String encryptedemail = AESEncryptUtility.encrypt(emailId);
                    
 				// Calling External Service to send email--Nitesh
 				EmailRequest emailRequest = EmailRequest.builder().to(userbody.getEmailId())
 						.message("Congratulation Merchant, your account has been registered successfully. \n Please Verify your Mobile Number with the link \n http://localhost:3000/verify?id="+encryptedemail)
-						.subject("Congurations your account has been registered.").build();
+						.subject("Congratulations your account has been registered.").build();
 				EmailResponse emailResponse = emailService.sendEmail(emailRequest);
 
 				logger.info("Email has been send successfully.");
