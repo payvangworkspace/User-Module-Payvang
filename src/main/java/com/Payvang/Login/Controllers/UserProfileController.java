@@ -44,7 +44,7 @@ public class UserProfileController {
 	@PostMapping("/profile")
 	public UserProfileResponse getUserProfile(@RequestBody LoginRequest loginRequest) {
 		User user = userservice.findUserProfile(loginRequest.getEmailId());
-		return new UserProfileResponse(user.getFirstName(), user.getLastName(), user.getBusinessName());
+		return new UserProfileResponse( user.getBusinessName(),user.getEmailId(),user.getIndustryCategory(),user.getIndustrySubCategory());
 	}
 
 //	@GetMapping("/getRole")
