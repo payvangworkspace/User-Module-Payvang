@@ -130,7 +130,7 @@ public class UserService {
 			user.setAppId(getappId());
 			user.setAccountValidationKey(TransactionManager.getNewTransactionId());
 			user.setEmailValidationFlag(false);
-			user.setExpressPayFlag(false);
+			//user.setExpressPayFlag(false);
 			user.setRegistrationDate(date);
 
 			if (null != user.getPassword()) {
