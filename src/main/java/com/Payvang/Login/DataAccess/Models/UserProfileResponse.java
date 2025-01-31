@@ -2,30 +2,18 @@ package com.Payvang.Login.DataAccess.Models;
 
 public class UserProfileResponse {
 
-	private String firstName;
-	private String lastName;
 	private String businessName;
+	private String emailId;
+	private String industryCategory;
+	private String industrySubCategory;
 
-	public UserProfileResponse(String firstName, String lastName,String businessName) {
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.businessName=businessName;
-	}
+	public UserProfileResponse(String businessName, String emailId, String industryCategory,
+			String industrySubcategory) {
 
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		this.businessName = businessName;
+		this.emailId = emailId;
+		this.industryCategory = industryCategory;
+		this.industrySubCategory = industrySubcategory;
 	}
 
 	public String getBusinessName() {
@@ -35,7 +23,29 @@ public class UserProfileResponse {
 	public void setBusinessName(String businessName) {
 		this.businessName = businessName;
 	}
-	
-	
+
+	public String getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+
+	public String getIndustryCategory() {
+		return industryCategory;
+	}
+
+	public void setIndustryCategory(String industryCategory) {
+		this.industryCategory = industryCategory;
+	}
+
+	public String getIndustrySubCategory() {
+		return industrySubCategory;
+	}
+
+	public void setIndustrySubCategory(String industrySubCategory) {
+		this.industrySubCategory = industrySubCategory;
+	}
 
 }
