@@ -1,12 +1,16 @@
 package com.Payvang.Login.Services;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Payvang.Login.CustomExceptions.MerchantNotFoundException;
 import com.Payvang.Login.DataAccess.Models.Merchant;
+import com.Payvang.Login.Models.MerchantBankRequest;
 import com.Payvang.Login.Models.MerchantDTO;
 import com.Payvang.Login.Models.MerchantRequest;
 import com.Payvang.Login.Repositories.MerchantRepository;
@@ -133,5 +137,79 @@ public class MerchantService {
 	        // Save and return the updated Merchant
 	        return merchantRepository.save(existingMerchant);
 	    }
+	    
+	    public List<MerchantDTO> getAllMerchants() {
+	        List<Merchant> merchants = merchantRepository.findAll();
+
+	        return merchants.stream().map(merchant -> {
+	            MerchantDTO dto = new MerchantDTO();
+	            dto.setMerchantId(merchant.getMerchantId());
+	            dto.setBusinessName(merchant.getBusinessName());
+	            dto.setContactEmail(merchant.getContactEmail());
+	            dto.setContactName(merchant.getContactName());
+	            dto.setContactPhone(merchant.getContactPhone());
+	            dto.setWebsite(merchant.getWebsite());
+	            dto.setCity(merchant.getCity());
+	            dto.setCountry(merchant.getCountry());
+	            dto.setPostalCode(merchant.getPostalCode());
+	            dto.setState(merchant.getState());
+	            dto.setBusinessModel(merchant.getBusinessModel());
+	            dto.setOrganisationType(merchant.getOrganisationType());
+	            dto.setPan(merchant.getPan());
+	            dto.setPanName(merchant.getPanName());
+
+	            // Convert MerchantBank entities to DTOs
+	            dto.setBankAccounts(merchant.getBankAccounts().stream().map(bank -> {
+	                MerchantBankRequest bankDTO = new MerchantBankRequest();
+	                bankDTO.setAccountHolderName(bank.getAccountHolderName());
+	                bankDTO.setAccountNumber(bank.getAccountNumber());
+	                bankDTO.setAccountType(bank.getAccountType().toString());
+	                bankDTO.setBankName(bank.getBankName());
+	                bankDTO.setBranchName(bank.getBranchName());
+	                bankDTO.setIfscCode(bank.getIfscCode());
+	                bankDTO.setStatus(bank.getStatus().toString());
+	                return bankDTO;
+	            }).collect(Collectors.toList()));
+
+	            return dto;
+	        }).collect(Collectors.toList());
+	    }
+	    
+	    public MerchantDTO getMerchantDetailById(Long merchantId) {
+	    	  Merchant merchant = merchantRepository.findById(merchantId)
+		                .orElseThrow(() -> new RuntimeException("Merchant not found"));
+
+	        MerchantDTO dto = new MerchantDTO();
+	        dto.setMerchantId(merchant.getMerchantId());
+	        dto.setBusinessName(merchant.getBusinessName());
+	        dto.setContactEmail(merchant.getContactEmail());
+	        dto.setContactName(merchant.getContactName());
+	        dto.setContactPhone(merchant.getContactPhone());
+	        dto.setWebsite(merchant.getWebsite());
+	        dto.setCity(merchant.getCity());
+	        dto.setCountry(merchant.getCountry());
+	        dto.setPostalCode(merchant.getPostalCode());
+	        dto.setState(merchant.getState());
+	        dto.setBusinessModel(merchant.getBusinessModel());
+	        dto.setOrganisationType(merchant.getOrganisationType());
+	        dto.setPan(merchant.getPan());
+	        dto.setPanName(merchant.getPanName());
+
+	        // Convert MerchantBank entities to DTOs
+	        dto.setBankAccounts(merchant.getBankAccounts().stream().map(bank -> {
+	            MerchantBankRequest bankDTO = new MerchantBankRequest();
+	            bankDTO.setAccountHolderName(bank.getAccountHolderName());
+	            bankDTO.setAccountNumber(bank.getAccountNumber());
+	            bankDTO.setAccountType(bank.getAccountType().toString());
+	            bankDTO.setBankName(bank.getBankName());
+	            bankDTO.setBranchName(bank.getBranchName());
+	            bankDTO.setIfscCode(bank.getIfscCode());
+	            bankDTO.setStatus(bank.getStatus().toString());
+	            return bankDTO;
+	        }).collect(Collectors.toList()));
+
+	        return dto;
+	    }
+
 	
 }

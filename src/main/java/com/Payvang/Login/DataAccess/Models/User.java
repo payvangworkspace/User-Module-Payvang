@@ -39,7 +39,7 @@ public class User implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String companyName;
-	private String contactPerson;
+	//private String contactPerson;
 
 	//private String merchantType;
 
@@ -267,13 +267,7 @@ public class User implements Serializable {
 		this.registrationDate = registrationDate;
 	}
 
-	public String getContactPerson() {
-		return contactPerson;
-	}
 
-	public void setContactPerson(String contactPerson) {
-		this.contactPerson = contactPerson;
-	}
 
 	public String getEmailId() {
 		return emailId;
