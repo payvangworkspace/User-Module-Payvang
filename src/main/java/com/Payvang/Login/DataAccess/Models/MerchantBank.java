@@ -28,10 +28,10 @@ public class MerchantBank {
     @Column(name = "account_id")
     private Long accountId;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "merchant_id", referencedColumnName = "merchant_id", nullable = false)
-    private Merchant merchant; 
+//    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "merchant_id", referencedColumnName = "merchant_id", nullable = false)
+//    private Merchant merchant; 
 
     @Column(name = "account_holder_name", nullable = false, length = 150)
     private String accountHolderName;
@@ -61,6 +61,10 @@ public class MerchantBank {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
 
     // Getters and Setters
 

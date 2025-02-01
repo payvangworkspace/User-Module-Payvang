@@ -1,13 +1,18 @@
 package com.Payvang.Login.DataAccess.Models;
 
 import java.time.LocalDateTime;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "merchant")
@@ -90,6 +95,8 @@ public class Merchant {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MerchantBank> bankAccounts;
     
     public Long getMerchantId() {
         return merchantId;
@@ -290,4 +297,14 @@ public class Merchant {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+	public List<MerchantBank> getBankAccounts() {
+		return bankAccounts;
+	}
+
+	public void setBankAccounts(List<MerchantBank> bankAccounts) {
+		this.bankAccounts = bankAccounts;
+	}
+    
+    
 }

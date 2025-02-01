@@ -1,13 +1,25 @@
 package com.Payvang.Login.Models;
 
 import java.util.Date;
+import java.util.List;
 
 public class MerchantDTO {
 
     private String businessName;
     private String contactName;
     private String contactPhone;
-    private String address;
+    private String contactEmail;
+    public String getContactEmail() {
+		return contactEmail;
+	}
+
+
+	public void setContactEmail(String contactEmail) {
+		this.contactEmail = contactEmail;
+	}
+
+
+	private String address;
     private String city;
     private String state;
     private String country;
@@ -25,11 +37,22 @@ public class MerchantDTO {
     private String operationState;
     private String operationPostalCode;
     private String cin;
-
+    private Long merchantId;
+    private List<MerchantBankRequest> bankAccounts;
     
    
 
-    public MerchantDTO() {
+    public List<MerchantBankRequest> getBankAccounts() {
+		return bankAccounts;
+	}
+
+
+	public void setBankAccounts(List<MerchantBankRequest> bankAccounts) {
+		this.bankAccounts = bankAccounts;
+	}
+
+
+	public MerchantDTO() {
     }
 
     
@@ -200,6 +223,16 @@ public class MerchantDTO {
     public void setCin(String cin) {
         this.cin = cin;
     }
+
+
+	public Long getMerchantId() {
+		return merchantId;
+	}
+
+
+	public void setMerchantId(Long merchantId) {
+		this.merchantId = merchantId;
+	}
 
     
 

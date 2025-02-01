@@ -2,6 +2,9 @@ package com.Payvang.Login.Controllers;
 
 
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,8 @@ import com.Payvang.Login.Models.MerchantDTO;
 import com.Payvang.Login.Models.MerchantRequest;
 import com.Payvang.Login.Services.MerchantBankService;
 import com.Payvang.Login.Services.MerchantService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api/merchant")
@@ -108,5 +113,26 @@ public class MerchantController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating merchant details");
 	        }
 	    }
+	    
+	    @GetMapping
+	    public List<MerchantDTO> getAllMerchants() {
+	        return merchantservice.getAllMerchants();
+	    
+	    }
+	    
+	    @GetMapping("/details/{merchantId}")
+	    public ResponseEntity<?> getMerchantById(@PathVariable ("merchantId")Long merchantId) {
+	        try {
+	            MerchantDTO merchantDTO = merchantservice.getMerchantDetailById(merchantId);
+	            return ResponseEntity.ok(merchantDTO);
+	        } catch (EntityNotFoundException ex) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body(Collections.singletonMap("error", ex.getMessage()));
+	        } catch (Exception ex) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(Collections.singletonMap("error", "An unexpected error occurred."));
+	        }
+	    }
+
 	
 }
