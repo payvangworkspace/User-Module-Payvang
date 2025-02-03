@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.Payvang.Login.CustomExceptions.MerchantNotFoundException;
 import com.Payvang.Login.DataAccess.Models.Merchant;
+import com.Payvang.Login.DataAccess.Models.NotificationEmailer;
 import com.Payvang.Login.Models.MerchantBankRequest;
 import com.Payvang.Login.Models.MerchantDTO;
 import com.Payvang.Login.Models.MerchantRequest;
+import com.Payvang.Login.Models.NotificationEmailerDTO;
 import com.Payvang.Login.Repositories.MerchantRepository;
 
 import jakarta.transaction.Transactional;
@@ -37,6 +39,23 @@ public class MerchantService {
 	        merchant.setCreatedAt(LocalDateTime.now());
 	        merchant.setUpdatedAt(LocalDateTime.now());
 
+	        merchant.setCity(request.getCity());
+	        merchant.setState(request.getState());
+	        merchant.setCountry(request.getCountry());
+	        merchant.setPostalCode(request.getPostalCode());
+	        merchant.setTelephoneNo(request.getTelephoneNo());
+	        merchant.setOrganisationType(request.getOrganisationType());
+	        merchant.setMultiCurrency(request.getMultiCurrency());
+	        merchant.setOperationAddress(request.getOperationAddress());
+	        merchant.setOperationCity(request.getOperationCity());
+	        merchant.setDateOfEstablishment(request.getDateOfEstablishment());
+	        merchant.setPan(request.getPan());
+	        merchant.setPanName(request.getPanName());
+	        merchant.setBusinessModel(request.getBusinessModel());
+	        merchant.setOperationState(request.getOperationState());
+	        merchant.setOperationPostalCode(request.getOperationPostalCode());
+	        merchant.setCin(request.getCin());
+	        
 	        merchantRepository.save(merchant);
 	    }
 	    
@@ -194,10 +213,20 @@ public class MerchantService {
 	        dto.setOrganisationType(merchant.getOrganisationType());
 	        dto.setPan(merchant.getPan());
 	        dto.setPanName(merchant.getPanName());
+	        dto.setAddress(merchant.getAddress());
+	        dto.setTelephoneNo(merchant.getTelephoneNo());
+	        dto.setMultiCurrency(merchant.getMultiCurrency());
+	        dto.setOperationAddress(merchant.getOperationAddress());
+	        dto.setOperationCity(merchant.getOperationCity());
+	        dto.setDateOfEstablishment(merchant.getDateOfEstablishment());
+	        dto.setOperationState(merchant.getOperationState());
+	        dto.setOperationPostalCode(merchant.getOperationPostalCode());
+	        dto.setCin(merchant.getCin());
 
 	        // Convert MerchantBank entities to DTOs
 	        dto.setBankAccounts(merchant.getBankAccounts().stream().map(bank -> {
 	            MerchantBankRequest bankDTO = new MerchantBankRequest();
+	            bankDTO.setMerchantId(merchantId);
 	            bankDTO.setAccountHolderName(bank.getAccountHolderName());
 	            bankDTO.setAccountNumber(bank.getAccountNumber());
 	            bankDTO.setAccountType(bank.getAccountType().toString());
@@ -207,6 +236,26 @@ public class MerchantService {
 	            bankDTO.setStatus(bank.getStatus().toString());
 	            return bankDTO;
 	        }).collect(Collectors.toList()));
+	        
+	        if (merchant.getNotificationEmailer() != null) {
+	            NotificationEmailer emailer = merchant.getNotificationEmailer();
+	            NotificationEmailerDTO emailerDTO = new NotificationEmailerDTO();
+	            emailerDTO.setAppId(emailer.getAppId());
+	            emailerDTO.setExpressPayFlag(emailer.getExpressPayFlag());
+	            emailerDTO.setIframePaymentFlag(emailer.getIframePaymentFlag());
+	            emailerDTO.setMerchantHostedFlag(emailer.getMerchantHostedFlag());
+	            emailerDTO.setRefundTransactionCustomerEmailFlag(emailer.getRefundTransactionCustomerEmailFlag());
+	            emailerDTO.setRefundTransactionMerchantEmailFlag(emailer.getRefundTransactionMerchantEmailFlag());
+	            emailerDTO.setRetryTransactionCustomeFlag(emailer.getRetryTransactionCustomeFlag());
+	            emailerDTO.setSendMultipleEmailer(emailer.getSendMultipleEmailer());
+	            emailerDTO.setSurchargeFlag(emailer.getSurchargeFlag());
+	            emailerDTO.setTransactionAuthenticationEmailFlag(emailer.getTransactionAuthenticationEmailFlag());
+	            emailerDTO.setTransactionCustomerEmailFlag(emailer.getTransactionCustomerEmailFlag());
+	            emailerDTO.setTransactionEmailerFlag(emailer.getTransactionEmailerFlag());
+	            emailerDTO.setTransactionSmsFlag(emailer.getTransactionSmsFlag());
+                emailerDTO.setMerchantId(merchantId);
+	            dto.setNotificationEmailer(emailerDTO);
+	        }
 
 	        return dto;
 	    }

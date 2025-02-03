@@ -1,10 +1,12 @@
 package com.Payvang.Login.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
  
 import com.Payvang.Login.DataAccess.Models.NotificationEmailer;
+import com.Payvang.Login.Models.NotificationEmailerDTO;
 import com.Payvang.Login.Services.NotificationEmailerService;
  
 import java.util.List;
@@ -41,14 +43,18 @@ public class NotificationEmailerController {
         NotificationEmailer emailer = service.getNotificationEmailerByAppId(appId);
         return emailer != null ? ResponseEntity.ok(emailer) : ResponseEntity.notFound().build();
     }
+    
  
-   
     @PostMapping
-    public ResponseEntity<NotificationEmailer> createOrUpdateNotificationEmailer(@RequestBody NotificationEmailer notificationEmailer) {
-        NotificationEmailer savedEmailer = service.saveOrUpdateNotificationEmailer(notificationEmailer);
-        return ResponseEntity.ok(savedEmailer);
+    public ResponseEntity<?> createNotificationEmailers(@RequestBody NotificationEmailerDTO notificationEmailer) {
+        try {
+           
+            String response = service.createNotificationEmailer(notificationEmailer);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error creating NotificationEmailer: " + e.getMessage());
+        }
     }
- 
-   
 }
  
