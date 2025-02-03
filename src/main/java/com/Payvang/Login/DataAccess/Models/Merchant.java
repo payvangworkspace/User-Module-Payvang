@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.List;
@@ -69,7 +70,7 @@ public class Merchant {
     private String operationCity;
 
     @Column(name = "date_of_establishment")
-    private Date dateOfEstablishment;
+    private LocalDateTime dateOfEstablishment;
 
     @Column(name = "pan", length = 10)
     private String pan;
@@ -97,6 +98,9 @@ public class Merchant {
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MerchantBank> bankAccounts;
+    
+    @OneToOne(mappedBy = "merchant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private NotificationEmailer notificationEmailer; 
     
     public Long getMerchantId() {
         return merchantId;
@@ -226,15 +230,17 @@ public class Merchant {
         this.operationCity = operationCity;
     }
 
-    public Date getDateOfEstablishment() {
-        return dateOfEstablishment;
-    }
+   
 
-    public void setDateOfEstablishment(Date dateOfEstablishment) {
-        this.dateOfEstablishment = dateOfEstablishment;
-    }
+    public LocalDateTime getDateOfEstablishment() {
+		return dateOfEstablishment;
+	}
 
-    public String getPan() {
+	public void setDateOfEstablishment(LocalDateTime dateOfEstablishment) {
+		this.dateOfEstablishment = dateOfEstablishment;
+	}
+
+	public String getPan() {
         return pan;
     }
 
@@ -304,6 +310,14 @@ public class Merchant {
 
 	public void setBankAccounts(List<MerchantBank> bankAccounts) {
 		this.bankAccounts = bankAccounts;
+	}
+
+	public NotificationEmailer getNotificationEmailer() {
+		return notificationEmailer;
+	}
+
+	public void setNotificationEmailer(NotificationEmailer notificationEmailer) {
+		this.notificationEmailer = notificationEmailer;
 	}
     
     

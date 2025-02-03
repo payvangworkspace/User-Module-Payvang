@@ -1,68 +1,21 @@
-package com.Payvang.Login.DataAccess.Models;
+package com.Payvang.Login.Models;
 
-import jakarta.persistence.*;
+public class NotificationEmailerDTO {
 
-@Entity
-@Table(name = "notificationemailer")
-public class NotificationEmailer {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@Column(name = "appId")
 	private String appId;
-
-	@Column(name = "expressPayFlag", nullable = false)
+	private Long merchantId;
 	private Boolean expressPayFlag;
-
-	@Column(name = "iframePaymentFlag", nullable = false)
 	private Boolean iframePaymentFlag;
-
-	@Column(name = "merchantHostedFlag", nullable = false)
 	private Boolean merchantHostedFlag;
-
-	@Column(name = "refundTransactionCustomerEmailFlag", nullable = false)
 	private Boolean refundTransactionCustomerEmailFlag;
-
-	@Column(name = "refundTransactionMerchantEmailFlag", nullable = false)
 	private Boolean refundTransactionMerchantEmailFlag;
-
-	@Column(name = "retryTransactionCustomeFlag", nullable = false)
 	private Boolean retryTransactionCustomeFlag;
-
-	@Column(name = "sendMultipleEmailer")
 	private String sendMultipleEmailer;
-
-	@Column(name = "surchargeFlag", nullable = false)
 	private Boolean surchargeFlag;
-
-	@Column(name = "transactionAuthenticationEmailFlag", nullable = false)
 	private Boolean transactionAuthenticationEmailFlag;
-
-	@Column(name = "transactionCustomerEmailFlag", nullable = false)
 	private Boolean transactionCustomerEmailFlag;
-
-	@Column(name = "transactionEmailerFlag", nullable = false)
 	private Boolean transactionEmailerFlag;
-
-	@Column(name = "transactionSmsFlag", nullable = false)
 	private Boolean transactionSmsFlag;
-	
-	@OneToOne
-	@JoinColumn(name = "merchant_id", referencedColumnName = "merchant_id", nullable = false, unique = true)
-	private Merchant merchant;
-
-
-
-	// Getters and Setters
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getAppId() {
 		return appId;
@@ -168,15 +121,12 @@ public class NotificationEmailer {
 		this.transactionSmsFlag = transactionSmsFlag;
 	}
 
-	public Merchant getMerchant() {
-		return merchant;
+	public Long getMerchantId() {
+		return merchantId;
 	}
 
-	public void setMerchant(Merchant merchant) {
-		this.merchant = merchant;
+	public void setMerchantId(Long merchantId) {
+		this.merchantId = merchantId;
 	}
 
-	
-	
-	
 }
