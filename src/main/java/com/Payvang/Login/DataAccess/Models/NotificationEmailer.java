@@ -1,5 +1,7 @@
 package com.Payvang.Login.DataAccess.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,44 +15,45 @@ public class NotificationEmailer {
 	@Column(name = "appId")
 	private String appId;
 
-	@Column(name = "expressPayFlag", nullable = false)
+	@Column(name = "expressPayFlag")
 	private Boolean expressPayFlag;
 
-	@Column(name = "iframePaymentFlag", nullable = false)
+	@Column(name = "iframePaymentFlag")
 	private Boolean iframePaymentFlag;
 
-	@Column(name = "merchantHostedFlag", nullable = false)
+	@Column(name = "merchantHostedFlag")
 	private Boolean merchantHostedFlag;
 
-	@Column(name = "refundTransactionCustomerEmailFlag", nullable = false)
+	@Column(name = "refundTransactionCustomerEmailFlag")
 	private Boolean refundTransactionCustomerEmailFlag;
 
-	@Column(name = "refundTransactionMerchantEmailFlag", nullable = false)
+	@Column(name = "refundTransactionMerchantEmailFlag")
 	private Boolean refundTransactionMerchantEmailFlag;
 
-	@Column(name = "retryTransactionCustomeFlag", nullable = false)
+	@Column(name = "retryTransactionCustomeFlag")
 	private Boolean retryTransactionCustomeFlag;
 
 	@Column(name = "sendMultipleEmailer")
 	private String sendMultipleEmailer;
 
-	@Column(name = "surchargeFlag", nullable = false)
+	@Column(name = "surchargeFlag")
 	private Boolean surchargeFlag;
 
-	@Column(name = "transactionAuthenticationEmailFlag", nullable = false)
+	@Column(name = "transactionAuthenticationEmailFlag")
 	private Boolean transactionAuthenticationEmailFlag;
 
-	@Column(name = "transactionCustomerEmailFlag", nullable = false)
+	@Column(name = "transactionCustomerEmailFlag")
 	private Boolean transactionCustomerEmailFlag;
 
-	@Column(name = "transactionEmailerFlag", nullable = false)
+	@Column(name = "transactionEmailerFlag")
 	private Boolean transactionEmailerFlag;
 
-	@Column(name = "transactionSmsFlag", nullable = false)
+	@Column(name = "transactionSmsFlag")
 	private Boolean transactionSmsFlag;
 	
 	@OneToOne
 	@JoinColumn(name = "merchant_id", referencedColumnName = "merchant_id", nullable = false, unique = true)
+	@JsonIgnore 
 	private Merchant merchant;
 
 
