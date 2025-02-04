@@ -33,37 +33,38 @@ public class MerchantBank {
 //    @JoinColumn(name = "merchant_id", referencedColumnName = "merchant_id", nullable = false)
 //    private Merchant merchant; 
 
-    @Column(name = "account_holder_name", nullable = false, length = 150)
+    @Column(name = "account_holder_name", length = 150)
     private String accountHolderName;
 
-    @Column(name = "bank_name", nullable = false, length = 150)
+    @Column(name = "bank_name", length = 150)
     private String bankName;
 
-    @Column(name = "branch_name", nullable = false, length = 150)
+    @Column(name = "branch_name", length = 150)
     private String branchName;
 
-    @Column(name = "account_number", nullable = false, length = 30)
+    @Column(name = "account_number", length = 30)
     private String accountNumber;
 
-    @Column(name = "ifsc_code", nullable = false, length = 11)
+    @Column(name = "ifsc_code", length = 11)
     private String ifscCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "account_type", nullable = false)
+    @Column(name = "account_type")
     private AccountType accountType; 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private AccountStatus status; 
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @ManyToOne
-    @JoinColumn(name = "merchant_id", nullable = false)
+    @JoinColumn(name = "merchant_id")
+    @JsonIgnore 
     private Merchant merchant;
 
     // Getters and Setters

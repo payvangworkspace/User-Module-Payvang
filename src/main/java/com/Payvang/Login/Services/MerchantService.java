@@ -4,18 +4,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.el.stream.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Payvang.Login.CustomExceptions.MerchantNotFoundException;
 import com.Payvang.Login.DataAccess.Models.Merchant;
+import com.Payvang.Login.DataAccess.Models.MerchantBank;
 import com.Payvang.Login.DataAccess.Models.NotificationEmailer;
+import com.Payvang.Login.Models.AccountStatus;
+import com.Payvang.Login.Models.AccountType;
 import com.Payvang.Login.Models.MerchantBankRequest;
 import com.Payvang.Login.Models.MerchantDTO;
 import com.Payvang.Login.Models.MerchantRequest;
 import com.Payvang.Login.Models.NotificationEmailerDTO;
 import com.Payvang.Login.Repositories.MerchantRepository;
+import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
@@ -82,80 +86,7 @@ public class MerchantService {
 	        merchantRepository.save(merchant);
 	    }
 	    
-	    @Transactional
-	    public Merchant updateMerchant(Long id, MerchantDTO updates) throws MerchantNotFoundException {
-	        // Fetch the existing Merchant from the database
-	        Merchant existingMerchant = merchantRepository.findById(id)
-	                .orElseThrow(() -> new MerchantNotFoundException("Merchant not found with id " + id));
 
-	        // Apply updates to mutable fields
-	        if (updates.getBusinessName() != null) {
-	            existingMerchant.setBusinessName(updates.getBusinessName());
-	        }
-	        if (updates.getContactName() != null) {
-	            existingMerchant.setContactName(updates.getContactName());
-	        }
-	        if (updates.getContactPhone() != null) {
-	            existingMerchant.setContactPhone(updates.getContactPhone());
-	        }
-	        if (updates.getAddress() != null) {
-	            existingMerchant.setAddress(updates.getAddress());
-	        }
-	        if (updates.getCity() != null) {
-	            existingMerchant.setCity(updates.getCity());
-	        }
-	        if (updates.getState() != null) {
-	            existingMerchant.setState(updates.getState());
-	        }
-	        if (updates.getCountry() != null) {
-	            existingMerchant.setCountry(updates.getCountry());
-	        }
-	        if (updates.getPostalCode() != null) {
-	            existingMerchant.setPostalCode(updates.getPostalCode());
-	        }
-	        if (updates.getTelephoneNo() != null) {
-	            existingMerchant.setTelephoneNo(updates.getTelephoneNo());
-	        }
-	        if (updates.getWebsite() != null) {
-	            existingMerchant.setWebsite(updates.getWebsite());
-	        }
-	        if (updates.getOrganisationType() != null) {
-	            existingMerchant.setOrganisationType(updates.getOrganisationType());
-	        }
-	        if (updates.getMultiCurrency() != null) {
-	            existingMerchant.setMultiCurrency(updates.getMultiCurrency());
-	        }
-	        if (updates.getOperationAddress() != null) {
-	            existingMerchant.setOperationAddress(updates.getOperationAddress());
-	        }
-	        if (updates.getOperationCity() != null) {
-	            existingMerchant.setOperationCity(updates.getOperationCity());
-	        }
-	        if (updates.getDateOfEstablishment() != null) {
-	            existingMerchant.setDateOfEstablishment(updates.getDateOfEstablishment());
-	        }
-	        if (updates.getPan() != null) {
-	            existingMerchant.setPan(updates.getPan());
-	        }
-	        if (updates.getPanName() != null) {
-	            existingMerchant.setPanName(updates.getPanName());
-	        }
-	        if (updates.getBusinessModel() != null) {
-	            existingMerchant.setBusinessModel(updates.getBusinessModel());
-	        }
-	        if (updates.getOperationState() != null) {
-	            existingMerchant.setOperationState(updates.getOperationState());
-	        }
-	        if (updates.getOperationPostalCode() != null) {
-	            existingMerchant.setOperationPostalCode(updates.getOperationPostalCode());
-	        }
-	        if (updates.getCin() != null) {
-	            existingMerchant.setCin(updates.getCin());
-	        }
-
-	        // Save and return the updated Merchant
-	        return merchantRepository.save(existingMerchant);
-	    }
 	    
 	    public List<MerchantDTO> getAllMerchants() {
 	        List<Merchant> merchants = merchantRepository.findAll();
@@ -259,6 +190,106 @@ public class MerchantService {
 
 	        return dto;
 	    }
+
+	    
+	    @Transactional
+	    public Merchant updateMerchant(Long id, MerchantDTO updates) throws MerchantNotFoundException {
+	       
+	        Merchant existingMerchant = merchantRepository.findById(id)
+	                .orElseThrow(() -> new MerchantNotFoundException("Merchant not found with id " + id));
+
+	       
+	        Optional.ofNullable(updates.getBusinessName()).ifPresent(existingMerchant::setBusinessName);
+	        Optional.ofNullable(updates.getContactName()).ifPresent(existingMerchant::setContactName);
+	        Optional.ofNullable(updates.getContactPhone()).ifPresent(existingMerchant::setContactPhone);
+	        Optional.ofNullable(updates.getAddress()).ifPresent(existingMerchant::setAddress);
+	        Optional.ofNullable(updates.getCity()).ifPresent(existingMerchant::setCity);
+	        Optional.ofNullable(updates.getState()).ifPresent(existingMerchant::setState);
+	        Optional.ofNullable(updates.getCountry()).ifPresent(existingMerchant::setCountry);
+	        Optional.ofNullable(updates.getPostalCode()).ifPresent(existingMerchant::setPostalCode);
+	        Optional.ofNullable(updates.getTelephoneNo()).ifPresent(existingMerchant::setTelephoneNo);
+	        Optional.ofNullable(updates.getWebsite()).ifPresent(existingMerchant::setWebsite);
+	        Optional.ofNullable(updates.getOrganisationType()).ifPresent(existingMerchant::setOrganisationType);
+	        Optional.ofNullable(updates.getMultiCurrency()).ifPresent(existingMerchant::setMultiCurrency);
+	        Optional.ofNullable(updates.getOperationAddress()).ifPresent(existingMerchant::setOperationAddress);
+	        Optional.ofNullable(updates.getOperationCity()).ifPresent(existingMerchant::setOperationCity);
+	        Optional.ofNullable(updates.getDateOfEstablishment()).ifPresent(existingMerchant::setDateOfEstablishment);
+	        Optional.ofNullable(updates.getPan()).ifPresent(existingMerchant::setPan);
+	        Optional.ofNullable(updates.getPanName()).ifPresent(existingMerchant::setPanName);
+	        Optional.ofNullable(updates.getBusinessModel()).ifPresent(existingMerchant::setBusinessModel);
+	        Optional.ofNullable(updates.getOperationState()).ifPresent(existingMerchant::setOperationState);
+	        Optional.ofNullable(updates.getOperationPostalCode()).ifPresent(existingMerchant::setOperationPostalCode);
+	        Optional.ofNullable(updates.getCin()).ifPresent(existingMerchant::setCin);
+
+	       
+	        if (updates.getBankAccounts() != null && !updates.getBankAccounts().isEmpty()) {
+	            List<MerchantBank> existingBanks = existingMerchant.getBankAccounts();
+
+	            for (MerchantBankRequest bankUpdate : updates.getBankAccounts()) {
+	                Optional<MerchantBank> existingBankOpt = existingBanks.stream()
+	                        .filter(b -> b.getMerchant().getMerchantId().equals(id))
+	                        .findFirst();
+
+	                if (existingBankOpt.isPresent()) {
+	                  
+	                    MerchantBank bank = existingBankOpt.get();
+	                    Optional.ofNullable(bankUpdate.getAccountHolderName()).ifPresent(bank::setAccountHolderName);
+	                    Optional.ofNullable(bankUpdate.getAccountNumber()).ifPresent(bank::setAccountNumber);
+	                    Optional.ofNullable(bankUpdate.getBankName()).ifPresent(bank::setBankName);
+	                    Optional.ofNullable(bankUpdate.getBranchName()).ifPresent(bank::setBranchName);
+	                    Optional.ofNullable(bankUpdate.getAccountType()).ifPresent(type -> bank.setAccountType(AccountType.valueOf(type.toUpperCase())));
+	                    Optional.ofNullable(bankUpdate.getStatus()).ifPresent(type -> bank.setStatus(AccountStatus.valueOf(type.toUpperCase())));
+	                    Optional.ofNullable(bankUpdate.getIfscCode()).ifPresent(bank::setIfscCode);
+	                } else {
+	                  
+	                    MerchantBank newBank = new MerchantBank();
+	                    newBank.setAccountNumber(bankUpdate.getAccountNumber());
+	                    newBank.setIfscCode(bankUpdate.getIfscCode());
+	                    Optional.ofNullable(bankUpdate.getAccountHolderName()).ifPresent(newBank::setAccountHolderName);
+	                    Optional.ofNullable(bankUpdate.getBankName()).ifPresent(newBank::setBankName);
+	                    Optional.ofNullable(bankUpdate.getBranchName()).ifPresent(newBank::setBranchName);
+	                    Optional.ofNullable(bankUpdate.getAccountType()).ifPresent(type -> newBank.setAccountType(AccountType.valueOf(type)));
+	                    Optional.ofNullable(bankUpdate.getStatus()).ifPresent(type-> newBank.setStatus(AccountStatus.valueOf(type.toUpperCase())));
+	                    newBank.setMerchant(existingMerchant);
+	                    existingBanks.add(newBank);
+	                }
+	            }
+	            existingMerchant.setBankAccounts(existingBanks);
+	        }
+
+	       
+	        if (updates.getNotificationEmailer() != null) {
+	            NotificationEmailerDTO emailerUpdate = updates.getNotificationEmailer();
+	            NotificationEmailer emailer = existingMerchant.getNotificationEmailer();
+
+	            if (emailer == null) {
+	                emailer = new NotificationEmailer();
+	                emailer.setMerchant(existingMerchant);
+	            }
+
+	            Optional.ofNullable(emailerUpdate.getAppId()).ifPresent(emailer::setAppId);
+	            Optional.ofNullable(emailerUpdate.getExpressPayFlag()).ifPresent(emailer::setExpressPayFlag);
+	            Optional.ofNullable(emailerUpdate.getIframePaymentFlag()).ifPresent(emailer::setIframePaymentFlag);
+	            Optional.ofNullable(emailerUpdate.getMerchantHostedFlag()).ifPresent(emailer::setMerchantHostedFlag);
+	            Optional.ofNullable(emailerUpdate.getRefundTransactionCustomerEmailFlag()).ifPresent(emailer::setRefundTransactionCustomerEmailFlag);
+	            Optional.ofNullable(emailerUpdate.getRefundTransactionMerchantEmailFlag()).ifPresent(emailer::setRefundTransactionMerchantEmailFlag);
+	            Optional.ofNullable(emailerUpdate.getRetryTransactionCustomeFlag()).ifPresent(emailer::setRetryTransactionCustomeFlag);
+	            Optional.ofNullable(emailerUpdate.getSendMultipleEmailer()).ifPresent(emailer::setSendMultipleEmailer);
+	            Optional.ofNullable(emailerUpdate.getSurchargeFlag()).ifPresent(emailer::setSurchargeFlag);
+	            Optional.ofNullable(emailerUpdate.getTransactionAuthenticationEmailFlag()).ifPresent(emailer::setTransactionAuthenticationEmailFlag);
+	            Optional.ofNullable(emailerUpdate.getTransactionCustomerEmailFlag()).ifPresent(emailer::setTransactionCustomerEmailFlag);
+	            Optional.ofNullable(emailerUpdate.getTransactionEmailerFlag()).ifPresent(emailer::setTransactionEmailerFlag);
+	            Optional.ofNullable(emailerUpdate.getTransactionSmsFlag()).ifPresent(emailer::setTransactionSmsFlag);
+
+	            existingMerchant.setNotificationEmailer(emailer);
+	        }
+
+	        
+	        return merchantRepository.save(existingMerchant);
+	    }
+
+	    
+	   
 
 	
 }
