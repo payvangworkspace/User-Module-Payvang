@@ -1,7 +1,11 @@
 package com.Payvang.Login.Services;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -15,14 +19,19 @@ import com.Payvang.Login.Constants.UserType;
 import com.Payvang.Login.CustomExceptions.InvalidRequestException;
 import com.Payvang.Login.CustomExceptions.SystemException;
 import com.Payvang.Login.CustomExceptions.UnauthorizedException;
+import com.Payvang.Login.DataAccess.Models.AuditTrail;
 import com.Payvang.Login.DataAccess.Models.EmailRequest;
 import com.Payvang.Login.DataAccess.Models.EmailResponse;
 import com.Payvang.Login.DataAccess.Models.MerchantSignup;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
 import com.Payvang.Login.DataAccess.Models.User;
 import com.Payvang.Login.External.Services.EmailService;
+import com.Payvang.Login.Models.ChangePasswordRequest;
+import com.Payvang.Login.Models.ChangePasswordResponse;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
+import com.Payvang.Login.Models.UserRecords;
+import com.Payvang.Login.Repositories.UserRecordsRepository;
 import com.Payvang.Login.Repositories.UserRepository;
 import com.Payvang.Login.Util.AESEncryptUtility;
 import com.Payvang.Login.Util.ErrorType;
@@ -33,6 +42,13 @@ import com.Payvang.Login.Util.SaltFactory;
 import com.Payvang.Login.Util.SaltFileManager;
 import com.Payvang.Login.Util.TransactionManager;
 import com.Payvang.Login.Util.UserStatusType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+
+
 
 @Service
 public class UserService {
@@ -45,10 +61,25 @@ public class UserService {
 	@Autowired
 	private EmailService emailService;
 	
+
+	@Value("${password.user.dummy}")
+	private String dummyPassword;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	
 	@Autowired
 	private UserValidationService userValidationService;
 	
+
+	@Autowired
+	private UserRecordsRepository userRecordsRepository;
+
+
+	@Autowired
+	private AuditTrailService auditTrailService;
+
 
 	@Autowired
 	JwtUtil jwtutil;
@@ -207,6 +238,7 @@ public class UserService {
 			if (password.equals(userDBPassword)) {
 				String accessToken = jwtutil.generateToken(users.getEmailId());
 				responseObject.setResponseMessage(accessToken);
+				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
 			}
 
 			return responseObject;
@@ -258,6 +290,23 @@ public class UserService {
 				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
 				responseObject.setResponseMessage("Merchant created Successfully");
 				
+			//Adding the audit trail for it
+		AuditTrail auditTrail = new AuditTrail();
+auditTrail.setEntityName("User Entity");
+			auditTrail.setAction("MERCHANT SIGNUP ACTION");
+			auditTrail.setPerformedByUser("ADMIN");
+			auditTrail.setPerformedAt(LocalDateTime.now());
+			auditTrail.setUpdatedat(LocalDateTime.now());
+			auditTrail.setOldValue("NA"); // Save old value as JSON
+			auditTrail.setNewValue(toJson(user)); // Save new value as JSON
+			auditTrail.setIpAddress("127.0.0.1");
+			auditTrail.setComments("New Merchant has been created by ADMIN");
+
+			// saving to db
+
+			auditTrailService.saveAuditTrail(auditTrail);
+
+
 				//setting the user validation entry to db
 				userValidationService.saveUserValidation(emailId);
 				
@@ -284,6 +333,149 @@ public class UserService {
 
 		return responseObject;
 	}
+
+	// Creating the dummy password and validating fields
+	public boolean CreateDummyPassword(String email) {
+		boolean res = false;
+		// setting the validation as true for mobile
+
+		try {
+			boolean response = userValidationService.setEmailValid(email);
+			if (response) {
+				// setting the password
+
+				SignupAction signup = SignupAction.builder().emailId(email).password(dummyPassword).build();
+				createNewUser(signup);
+				// sending mail to user about his dummy password creation
+				EmailRequest emailRequest = EmailRequest.builder().subject("Verification Done Successfully.")
+						.message("Your Verification has been done successfully. \n Your Dummy password for now is "
+								+ dummyPassword)
+						.to(email).build();
+				emailService.sendEmail(emailRequest);
+				res = true;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return res;
+
+	}
+
+	private String toJson(Object obj) {
+		try {
+			return objectMapper.writeValueAsString(obj); // Use ObjectMapper to serialize to JSON
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return "{}"; // Return empty JSON in case of error
+		}
+	}
+
+	public ResponseObject changePassword(String emailId, String oldPassword, String newPassword) throws Exception {
+
+		ResponseObject responseObject = new ResponseObject();
+		User user = userrepository.getByEmailId(emailId);
+
+//			user = userDao.find(emailId);
+
+		oldPassword = (PasswordHasher.hashPassword(oldPassword, user.getAppId()));
+
+		newPassword = (PasswordHasher.hashPassword(newPassword, user.getAppId()));
+		if (!oldPassword.equals(user.getPassword())) {
+			responseObject.setResponseCode(ErrorType.PASSWORD_MISMATCH.getResponseCode());
+			return responseObject;
+		} else if (newPassword.equals(oldPassword)) { // Match if new and old password is same and password is correct
+			responseObject.setResponseCode(ErrorType.OLD_PASSWORD_MATCH.getResponseCode());
+			return responseObject;
+		}
+
+		if (isUsedPassword(newPassword, user.getEmailId())) {
+			responseObject.setResponseCode(ErrorType.OLD_PASSWORD_MATCH.getResponseCode());
+			return responseObject;
+		}
+
+//			userRecordsDao.createDetails(emailId, oldPassword, user.getAppId());
+		UserRecords userRecords = UserRecords.builder().appId(user.getAppId()).emailId(emailId).password(oldPassword)
+				.createDate(new Date()).build();
+		userRecordsRepository.save(userRecords);
+
+		user.setPassword(newPassword);
+		// update the merchant /user to the db with new password
+		userrepository.save(user);
+
+		responseObject.setResponseCode(ErrorType.PASSWORD_CHANGED.getResponseCode());
+
+		// Sending Email for CRM password change notification
+//			EmailBuilder emailBuilder = new EmailBuilder();
+//			emailBuilder.emailPasswordChange(responseObject,emailId);
+
+		// sending mail to merchant for its password updation
+		EmailRequest emailRequest = EmailRequest.builder().subject("Account Password Changed").message(
+				"Your Account Password has been Changed Successfully. \n NOTE: Please contact if you have not did this.")
+				.to(emailId).build();
+		emailService.sendEmail(emailRequest);
+
+		// Maintain Audit Trail for Password Changed
+
+		AuditTrail auditTrail = AuditTrail.builder().action("Password Changed")
+				.comments("Merchant Account Password has been changed").entityName("User Entity").ipAddress("127.0.0.1")
+				.oldValue(oldPassword).newValue(newPassword).performedByUser("MERCHANT").updatedat(LocalDateTime.now()).performedAt(LocalDateTime.now())
+				.build();
+
+		// saving to db
+
+		auditTrailService.saveAuditTrail(auditTrail);
+
+		logger.info("Password changed successfully...");
+
+		return responseObject;
+	}
+
+	public boolean isUsedPassword(String newPassword, String emailId) {
+		List<String> oldPasswords = new ArrayList<String>();
+		List<String> getAllPasswords = userRecordsRepository.findAll().stream()
+				.filter(item -> item.getEmailId().equals(emailId)) // Filter the records where the email matches
+				.map(item -> item.getPassword()) // Map to the password field
+				.collect(Collectors.toList());
+		oldPasswords = getAllPasswords;
+		for (String password : oldPasswords) {
+			if (null == password) {
+				continue;
+			}
+			if (password.equals(newPassword)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public ChangePasswordResponse executeChangePassword(ChangePasswordRequest changePasswordRequest) {
+		ResponseObject responseObject = new ResponseObject();
+		try {
+			responseObject = changePassword(changePasswordRequest.getUsername(), changePasswordRequest.getOldPassword(),
+					changePasswordRequest.getNewPassword());
+
+			if (responseObject.getResponseCode().equals(ErrorType.PASSWORD_MISMATCH.getResponseCode())) {
+				return ChangePasswordResponse.builder().message(ErrorType.PASSWORD_MISMATCH.getResponseMessage()).status(HttpStatus.BAD_REQUEST).build();
+
+			} else if (responseObject.getResponseCode().equals(ErrorType.OLD_PASSWORD_MATCH.getResponseCode())) {
+				return ChangePasswordResponse.builder().message(ErrorType.OLD_PASSWORD_MATCH.getResponseMessage()).status(HttpStatus.BAD_REQUEST).build();
+		
+			}
+			return ChangePasswordResponse.builder().message(ErrorType.PASSWORD_CHANGED.getResponseMessage()).status(HttpStatus.OK).build();
+
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			e.printStackTrace();
+		}
+		return ChangePasswordResponse.builder().message(ErrorType.PASSWORD_CHANGED.getResponseMessage()).status(HttpStatus.OK).build();
+	}
+
+
+
+
+
+
+
 
 }
 

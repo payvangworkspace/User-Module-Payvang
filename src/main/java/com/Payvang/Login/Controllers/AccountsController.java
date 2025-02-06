@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.Payvang.Login.DataAccess.Models.EmailVerifyRequest;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
+import com.Payvang.Login.Models.ChangePasswordRequest;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Services.UserService;
@@ -51,5 +54,27 @@ public class AccountsController {
 	        }
 	        return ResponseEntity.ok(responseObject);
 	    }
+
+
+	@PostMapping("/random-password")
+	public ResponseEntity<?> generateRandomPassword(@RequestBody EmailVerifyRequest emailVerifyRequest) {
+		boolean res = userService.CreateDummyPassword(emailVerifyRequest.getEmail());
+		if (res) {
+			return ResponseEntity.status(HttpStatus.CREATED).body("User has been created with the dummy password");
+
+		}
+		return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+	}
+
+	@PostMapping("/changepassword")
+	public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+
+		var response = userService.executeChangePassword(changePasswordRequest);
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+
+
+
 
 }
