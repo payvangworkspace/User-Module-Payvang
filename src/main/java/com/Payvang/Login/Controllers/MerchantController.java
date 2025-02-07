@@ -120,8 +120,8 @@ public class MerchantController {
 	    
 	    }
 	    
-	    @GetMapping("/details/{merchantId}")
-	    public ResponseEntity<?> getMerchantById(@PathVariable ("merchantId")Long merchantId) {
+	    @GetMapping("/details/{appId}")
+	    public ResponseEntity<?> getMerchantById(@PathVariable ("appId")String merchantId) {
 	        try {
 	            MerchantDTO merchantDTO = merchantservice.getMerchantDetailById(merchantId);
 	            return ResponseEntity.ok(merchantDTO);

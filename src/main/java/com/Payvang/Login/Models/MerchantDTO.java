@@ -29,8 +29,13 @@ public class MerchantDTO {
 	private String operationPostalCode;
 	private String cin;
 	private Long merchantId;
+	private String appId;
 	private List<MerchantBankRequest> bankAccounts;
 	private NotificationEmailerDTO notificationEmailer;
+	
+	
+	private String firstName;
+	private String lastName;
 
 	public List<MerchantBankRequest> getBankAccounts() {
 		return bankAccounts;
@@ -233,6 +238,30 @@ public class MerchantDTO {
 
 	public void setNotificationEmailer(NotificationEmailerDTO notificationEmailer) {
 		this.notificationEmailer = notificationEmailer;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	
