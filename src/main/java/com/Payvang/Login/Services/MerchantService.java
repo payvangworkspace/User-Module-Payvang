@@ -106,7 +106,7 @@ public class MerchantService {
 			dto.setOrganisationType(merchant.getOrganisationType());
 			dto.setPan(merchant.getPan());
 			dto.setPanName(merchant.getPanName());
-
+            dto.setAppId(merchant.getAppId());
 			// Convert MerchantBank entities to DTOs
 			dto.setBankAccounts(merchant.getBankAccounts().stream().map(bank -> {
 				MerchantBankRequest bankDTO = new MerchantBankRequest();
@@ -119,6 +119,26 @@ public class MerchantService {
 				bankDTO.setStatus(bank.getStatus().toString());
 				return bankDTO;
 			}).collect(Collectors.toList()));
+			
+			if (merchant.getNotificationEmailer() != null) {
+				NotificationEmailer emailer = merchant.getNotificationEmailer();
+				NotificationEmailerDTO emailerDTO = new NotificationEmailerDTO();
+				emailerDTO.setAppId(emailer.getAppId());
+				emailerDTO.setExpressPayFlag(emailer.getExpressPayFlag());
+				emailerDTO.setIframePaymentFlag(emailer.getIframePaymentFlag());
+				emailerDTO.setMerchantHostedFlag(emailer.getMerchantHostedFlag());
+				emailerDTO.setRefundTransactionCustomerEmailFlag(emailer.getRefundTransactionCustomerEmailFlag());
+				emailerDTO.setRefundTransactionMerchantEmailFlag(emailer.getRefundTransactionMerchantEmailFlag());
+				emailerDTO.setRetryTransactionCustomeFlag(emailer.getRetryTransactionCustomeFlag());
+				emailerDTO.setSendMultipleEmailer(emailer.getSendMultipleEmailer());
+				emailerDTO.setSurchargeFlag(emailer.getSurchargeFlag());
+				emailerDTO.setTransactionAuthenticationEmailFlag(emailer.getTransactionAuthenticationEmailFlag());
+				emailerDTO.setTransactionCustomerEmailFlag(emailer.getTransactionCustomerEmailFlag());
+				emailerDTO.setTransactionEmailerFlag(emailer.getTransactionEmailerFlag());
+				emailerDTO.setTransactionSmsFlag(emailer.getTransactionSmsFlag());
+				emailerDTO.setMerchantId(merchant.getMerchantId());
+				dto.setNotificationEmailer(emailerDTO);
+			}
 
 			return dto;
 		}).collect(Collectors.toList());
