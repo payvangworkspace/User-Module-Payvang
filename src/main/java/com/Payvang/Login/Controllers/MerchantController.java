@@ -44,6 +44,8 @@ public class MerchantController {
 		try {
 			merchantBankService.saveMerchantBankDetails(request);
 			return new ResponseEntity<>("Merchant bank details saved successfully", HttpStatus.CREATED);
+		} catch (MerchantNotFoundException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error while saving merchant bank details", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -120,8 +122,8 @@ public class MerchantController {
 	    
 	    }
 	    
-	    @GetMapping("/details/{merchantId}")
-	    public ResponseEntity<?> getMerchantById(@PathVariable ("merchantId")Long merchantId) {
+	    @GetMapping("/details/{appId}")
+	    public ResponseEntity<?> getMerchantById(@PathVariable ("appId")String merchantId) {
 	        try {
 	            MerchantDTO merchantDTO = merchantservice.getMerchantDetailById(merchantId);
 	            return ResponseEntity.ok(merchantDTO);

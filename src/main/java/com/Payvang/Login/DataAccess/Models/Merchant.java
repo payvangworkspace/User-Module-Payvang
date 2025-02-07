@@ -102,6 +102,9 @@ public class Merchant {
     @OneToOne(mappedBy = "merchant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private NotificationEmailer notificationEmailer; 
     
+    @Column(name = "app_id")
+    private String appId;
+    
     public Long getMerchantId() {
         return merchantId;
     }
@@ -319,6 +322,16 @@ public class Merchant {
 	public void setNotificationEmailer(NotificationEmailer notificationEmailer) {
 		this.notificationEmailer = notificationEmailer;
 	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
+
+	
     
     
 }
