@@ -22,6 +22,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -34,6 +35,7 @@ public class User implements Serializable {
 	@Column(nullable = false, unique = true)
 	private String emailId;
 	private String password;
+    @Column(name = "app_id", length = 255, nullable = true)
 	private String appId;
 	private String businessName;
 	private String firstName;
@@ -174,6 +176,10 @@ public class User implements Serializable {
 
 	@OneToMany(targetEntity = Roles.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Roles> roles = new HashSet<Roles>();
+	
+	 @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	 private Merchant merchant;
+
 
 	public User() {
 
@@ -868,6 +874,14 @@ public class User implements Serializable {
 
 	public void setUserType(UserType userType) {
 		this.userType = userType;
+	}
+
+	public Merchant getMerchant() {
+		return merchant;
+	}
+
+	public void setMerchant(Merchant merchant) {
+		this.merchant = merchant;
 	}
 
 }
