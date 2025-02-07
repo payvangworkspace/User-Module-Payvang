@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.Payvang.Login.CustomExceptions.MerchantNotFoundException;
 import com.Payvang.Login.DataAccess.Models.Merchant;
 import com.Payvang.Login.DataAccess.Models.MerchantBank;
 import com.Payvang.Login.Models.AccountStatus;
@@ -29,7 +30,7 @@ public class MerchantBankService {
         
         
         Merchant merchant = merchantRepository.findById(request.getMerchantId())
-                .orElseThrow(() -> new RuntimeException("Merchant not found"));
+                .orElseThrow(() -> new MerchantNotFoundException("Merchant not found"));
         merchantBank.setMerchant(merchant);
         
         merchantBank.setAccountHolderName(request.getAccountHolderName());

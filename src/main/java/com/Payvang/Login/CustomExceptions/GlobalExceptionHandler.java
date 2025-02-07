@@ -24,4 +24,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleGenericException(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred: " + e.getMessage());
     }
+    
+    @ExceptionHandler(MerchantNotFoundException.class)
+    public ResponseEntity<String> handleMerchantNotFound(MerchantNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
