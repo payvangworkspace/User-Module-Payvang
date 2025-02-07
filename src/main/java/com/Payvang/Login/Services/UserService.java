@@ -299,6 +299,8 @@ public class UserService {
 			user.setMobile(userbody.getMobile());
 			user.setIndustryCategory(userbody.getIndustryCategory());
 			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
+			user.setFirstName(userbody.getFirstName());
+			user.setLastName(userbody.getLastName());
 			User userdata = userrepository.save(user);
 			
 				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
