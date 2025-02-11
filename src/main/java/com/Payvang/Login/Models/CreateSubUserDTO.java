@@ -14,6 +14,7 @@ public class CreateSubUserDTO {
 	private List<PermissionType> listPermissionType;
 	private String permissionString = "";
 	private boolean disableButtonFlag;
+	private String roletype;
 	
 	
 	public String getFirstName() {
@@ -64,5 +65,13 @@ public class CreateSubUserDTO {
 	public void setDisableButtonFlag(boolean disableButtonFlag) {
 		this.disableButtonFlag = disableButtonFlag;
 	}
+	public String getRoletype() {
+		return roletype;
+	}
+	public void setRoletype(String roletype) {
+		this.roletype = roletype;
+	}
+	
+	
 	
 }

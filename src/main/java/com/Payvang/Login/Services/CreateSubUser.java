@@ -44,7 +44,7 @@ public class CreateSubUser {
 		user.setFirstName(subuserdto.getFirstName());
 		user.setLastName(subuserdto.getLastName());
 		user.setEmailId(subuserdto.getEmailId());
-
+        String roletype = subuserdto.getRoletype().toUpperCase();
 		List<String> lstPermissiontType = subuserdto.getLstPermissionType();
 
 		Set<Permissions> permissions = new HashSet<Permissions>();
@@ -59,7 +59,7 @@ public class CreateSubUser {
 			}
 		}
 
-		responseObject = createUser(user, UserType.SUBUSER, " ", permissions);
+		responseObject = createUser(user, UserType.SUBUSER, " ", permissions,roletype);
 
 		String accountValidationId = responseObject.getAccountValidationID();
 
@@ -72,7 +72,7 @@ public class CreateSubUser {
 		return responseObject;
 	}
 
-	public ResponseObject createUser(User user, UserType userType, String parentappId, Set<Permissions> permissions)
+	public ResponseObject createUser(User user, UserType userType, String parentappId, Set<Permissions> permissions,String roletype)
 			throws SystemException, jakarta.transaction.SystemException {
 
 		SaltFileManager saltFileManager = new SaltFileManager();
@@ -113,7 +113,7 @@ public class CreateSubUser {
 			Roles role = new Roles();
 
 			role.setPermissions(permissions);
-			role.setName(UserType.MERCHANT.name());
+			role.setName(roletype);
 			roles.add(role);
 
 			user.setRoles(roles);
