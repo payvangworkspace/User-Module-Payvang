@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -102,8 +103,13 @@ public class Merchant {
     @OneToOne(mappedBy = "merchant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private NotificationEmailer notificationEmailer; 
     
-    @Column(name = "app_id")
+    @Column(name = "app_id", length = 255, nullable = true, insertable = false, updatable = false)
     private String appId;
+
+    @OneToOne
+    @JoinColumn(name = "app_id", referencedColumnName = "app_id")
+    private User user;
+
     
     public Long getMerchantId() {
         return merchantId;
@@ -331,7 +337,13 @@ public class Merchant {
 		this.appId = appId;
 	}
 
-	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
     
     
 }

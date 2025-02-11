@@ -8,6 +8,8 @@ public class MerchantSignup {
 	private String userRoleType;
 	private String industryCategory;
 	private String industrySubCategory;
+	private String firstName;
+	private String lastName;
 	
 	public String getEmailId() {
 		return emailId;
@@ -44,6 +46,18 @@ public class MerchantSignup {
 	}
 	public void setIndustrySubCategory(String industrySubCategory) {
 		this.industrySubCategory = industrySubCategory;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	

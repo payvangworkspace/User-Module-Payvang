@@ -22,6 +22,7 @@ import com.Payvang.Login.CustomExceptions.UnauthorizedException;
 import com.Payvang.Login.DataAccess.Models.AuditTrail;
 import com.Payvang.Login.DataAccess.Models.EmailRequest;
 import com.Payvang.Login.DataAccess.Models.EmailResponse;
+import com.Payvang.Login.DataAccess.Models.Merchant;
 import com.Payvang.Login.DataAccess.Models.MerchantSignup;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
 import com.Payvang.Login.DataAccess.Models.User;
@@ -31,6 +32,7 @@ import com.Payvang.Login.Models.ChangePasswordResponse;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Models.UserRecords;
+import com.Payvang.Login.Repositories.MerchantRepository;
 import com.Payvang.Login.Repositories.UserRecordsRepository;
 import com.Payvang.Login.Repositories.UserRepository;
 import com.Payvang.Login.Util.AESEncryptUtility;
@@ -61,6 +63,8 @@ public class UserService {
 	@Autowired
 	private EmailService emailService;
 	
+	@Autowired
+	private MerchantRepository merchantrepository;
 
 	@Value("${password.user.dummy}")
 	private String dummyPassword;
@@ -170,6 +174,16 @@ public class UserService {
 			user.setParentappId(parentappId);
 
 			userrepository.save(user);
+			
+			 if (user.getUserType() == UserType.MERCHANT) {
+			        Merchant merchant = new Merchant();
+			        merchant.setAppId(user.getAppId());
+			        merchant.setBusinessName(user.getBusinessName());
+			        merchant.setContactEmail(user.getEmailId());
+			        merchant.setUser(user); // Set the relationship
+
+			        merchantrepository.save(merchant);
+			    }
 
 			boolean isSaltInserted = saltFileManager.insertSalt(user.getAppId(), salt);
 
@@ -285,6 +299,8 @@ public class UserService {
 			user.setMobile(userbody.getMobile());
 			user.setIndustryCategory(userbody.getIndustryCategory());
 			user.setIndustrySubCategory(userbody.getIndustrySubCategory());
+			user.setFirstName(userbody.getFirstName());
+			user.setLastName(userbody.getLastName());
 			User userdata = userrepository.save(user);
 			
 				responseObject.setResponseCode(ErrorType.SUCCESS.getResponseCode());
