@@ -25,9 +25,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "User", indexes = { @Index(name = "IDX_MYIDX1", columnList = "emailId,appId") })
+@Table(name = "User", indexes = { @Index(name = "IDX_MYIDX1", columnList = "emailId,appId") },uniqueConstraints = @UniqueConstraint(columnNames = "app_id"))
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User implements Serializable {
 	private static final long serialVersionUID = 8476685067435231830L;
@@ -35,7 +36,7 @@ public class User implements Serializable {
 	@Column(nullable = false, unique = true)
 	private String emailId;
 	private String password;
-    @Column(name = "app_id", length = 255, nullable = true)
+    @Column(name = "app_id", length = 255, nullable = true,unique = true)
 	private String appId;
 	private String businessName;
 	private String firstName;

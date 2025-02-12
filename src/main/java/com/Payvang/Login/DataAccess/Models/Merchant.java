@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.ForeignKey;
 import java.util.Date;
 import java.util.List;
 
@@ -107,7 +108,8 @@ public class Merchant {
     private String appId;
 
     @OneToOne
-    @JoinColumn(name = "app_id", referencedColumnName = "app_id")
+   // @JoinColumn(name = "app_id", referencedColumnName = "app_id")
+    @JoinColumn(name = "app_id", referencedColumnName = "app_id", foreignKey = @ForeignKey(name = "fk_merchant_user"))
     private User user;
 
     
