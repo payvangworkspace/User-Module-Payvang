@@ -1,15 +1,21 @@
 package com.Payvang.Login.Controllers;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.Payvang.Login.DataAccess.Models.EmailVerifyRequest;
+import com.Payvang.Login.DataAccess.Models.LoginHistory;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
 import com.Payvang.Login.Models.ChangePasswordRequest;
 import com.Payvang.Login.Models.LoginRequest;
@@ -73,7 +79,16 @@ public class AccountsController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
+	@GetMapping("/{emailId}")
+    public ResponseEntity<List<LoginHistory>> getLoginHistory(@PathVariable ("emailId")String emailId) {
+        List<LoginHistory> loginHistoryList = userService.getLoginHistoryByUserId(emailId);
 
+        if (loginHistoryList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
+        }
+        return ResponseEntity.ok(loginHistoryList);
+    }
 
 
 

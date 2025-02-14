@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,7 @@ import com.Payvang.Login.Models.CreateSubAdminDTO;
 import com.Payvang.Login.Models.CreateSubUserDTO;
 import com.Payvang.Login.Services.CreateSubAdmin;
 import com.Payvang.Login.Services.CreateSubUser;
+import com.Payvang.Login.Services.UpdateSubUserPermission;
 import com.Payvang.Login.Util.ErrorType;
 
 @RestController
@@ -28,6 +31,9 @@ public class UserRoleManagementController {
 
 	@Autowired
 	private CreateSubAdmin createsubadmin;
+	
+	@Autowired
+	private UpdateSubUserPermission updateSubUserPermission;
 	
 	@GetMapping("/subuser/permissions")
     public ResponseEntity<List<PermissionType>> getSubUserPermissions() {
@@ -73,5 +79,18 @@ public class UserRoleManagementController {
 			return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@PutMapping("/subuser/{emailId}/permissions")
+    public ResponseEntity<String> updateSubUserPermissions(@PathVariable ("emailId")String emailId, @RequestBody CreateSubAdminDTO upSubAdmin) {
+		
+           try {            
+                      upSubAdmin.setEmailId(emailId);          
+                    updateSubUserPermission.updateSubuserPermission(upSubAdmin);           
+            return ResponseEntity.ok("Sub-user permissions updated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Error: " + e.getMessage());
+        }
+    }
 	
 }

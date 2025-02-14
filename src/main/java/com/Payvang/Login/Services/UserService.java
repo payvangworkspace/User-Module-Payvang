@@ -22,6 +22,7 @@ import com.Payvang.Login.CustomExceptions.UnauthorizedException;
 import com.Payvang.Login.DataAccess.Models.AuditTrail;
 import com.Payvang.Login.DataAccess.Models.EmailRequest;
 import com.Payvang.Login.DataAccess.Models.EmailResponse;
+import com.Payvang.Login.DataAccess.Models.LoginHistory;
 import com.Payvang.Login.DataAccess.Models.Merchant;
 import com.Payvang.Login.DataAccess.Models.MerchantSignup;
 import com.Payvang.Login.DataAccess.Models.ResponseObject;
@@ -32,6 +33,7 @@ import com.Payvang.Login.Models.ChangePasswordResponse;
 import com.Payvang.Login.Models.LoginRequest;
 import com.Payvang.Login.Models.SignupAction;
 import com.Payvang.Login.Models.UserRecords;
+import com.Payvang.Login.Repositories.LoginHistoryRepository;
 import com.Payvang.Login.Repositories.MerchantRepository;
 import com.Payvang.Login.Repositories.UserRecordsRepository;
 import com.Payvang.Login.Repositories.UserRepository;
@@ -83,6 +85,9 @@ public class UserService {
 
 	@Autowired
 	private AuditTrailService auditTrailService;
+	
+	@Autowired
+	private LoginHistoryRepository loginhistoryrepository;
 
 
 	@Autowired
@@ -489,9 +494,17 @@ auditTrail.setEntityName("User Entity");
 
 
 
+	 public List<LoginHistory> getLoginHistoryByUserId(String userId) {
+		 
+	        return loginhistoryrepository.findByEmailId(userId);
+		// return findLoginHistoryByUser(emailId,usertype,strartfrom , length)
+	    }
 
-
-
+	 
+	 // use latter
+//	 Pageable pageable = PageRequest.of(startFrom / length, length, Sort.by("id").descending());
+//	 Page<LoginHistory> loginHistories = loginHistoryRepository.findLoginHistoryByUser(emailId, userType, pageable);
+//	 List<LoginHistory> historyList = loginHistories.getContent();
 
 }
 
