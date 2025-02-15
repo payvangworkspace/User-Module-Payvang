@@ -506,6 +506,23 @@ auditTrail.setEntityName("User Entity");
 //	 Page<LoginHistory> loginHistories = loginHistoryRepository.findLoginHistoryByUser(emailId, userType, pageable);
 //	 List<LoginHistory> historyList = loginHistories.getContent();
 
+	 
+	 
+	 public LoginHistory findLastLoginByUser(String emailId)  { 
+			LoginHistory responseloginHistory = new LoginHistory();
+
+			List<LoginHistory> userLoginHistory = getLoginHistoryByUserId(emailId);
+			
+			         int counter = 0;
+			for (LoginHistory loginHistory : userLoginHistory) {			
+				if (counter == 1) {
+					responseloginHistory = loginHistory;
+					break;
+				}
+				counter++;
+			}
+			return responseloginHistory;
+		}
 }
 
 
